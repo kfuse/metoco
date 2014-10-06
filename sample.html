@@ -3,6 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+<style>
+body {
+    margin: 0;
+    padding: 0;
+}
+</style>
 </head>
 <body>
 
@@ -11,6 +17,10 @@
 
 <script type="text/javascript">
 var i = 0,
+    idCode,
+    lat,
+    lon,
+    height,
     intervalId,
     points = [
         "35.654504,139.722802",
@@ -28,6 +38,7 @@ var i = 0,
         "35.657635,139.723779",
         "35.657975,139.723774"
     ];
+
 intervalId = setInterval(function() {
     document.getElementById("view").src = "http://maps.googleapis.com/maps/api/streetview?size=320x320&location=" + points[i] + "&fov=90&heading=0&pitch=10&sensor=false";
     i++;
