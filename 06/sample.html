@@ -339,7 +339,7 @@ function getNecessaryTime(line, startStation, endStation) {
             && Metoco.Data.travelTime[line][i]["odpt:toStation"] === to) {
             necessaryTime = Metoco.Data.travelTime[line][i]["odpt:necessaryTime"] - 0;
             necessaryTime = necessaryTime * 60 * 1000;
-            neccesaryTime -= Metoco.Setting.stopDuration;
+            necessaryTime -= Metoco.Setting.stopDuration;
             return necessaryTime;
         }
     }
