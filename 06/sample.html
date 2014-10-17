@@ -313,7 +313,8 @@ Metoco.Data = {
 Metoco.Setting = {
     INTERVAL: 5000,
     debug: false,
-    isActualTime: true
+    isActualTime: true,
+    stopDuration: 20000
 };
 Metoco.Status = {
     current: 0,
@@ -338,6 +339,7 @@ function getNecessaryTime(line, startStation, endStation) {
             && Metoco.Data.travelTime[line][i]["odpt:toStation"] === to) {
             necessaryTime = Metoco.Data.travelTime[line][i]["odpt:necessaryTime"] - 0;
             necessaryTime = necessaryTime * 60 * 1000;
+            neccesaryTime -= Metoco.Setting.stopDuration;
             return necessaryTime;
         }
     }
@@ -549,7 +551,13 @@ function startSlide(line, start, end) {
             clearInterval(Metoco.Status.intervalId);
             Metoco.Status.intervalId = null;
             Metoco.Status.isMoving = false;
-            startSlide(line, Metoco.Status.current, end);
+            if (Metoco.Setting.isActualTime) {
+                setTimeout(function() {
+                    startSlide(line, Metoco.Status.current, end);
+                }, Metoco.Setting.stopDuration);
+            } else {
+                startSlide(line, Metoco.Status.current, end);
+            }
             console.log("continue");
         }
         // 次の画像を準備
