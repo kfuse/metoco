@@ -318,7 +318,7 @@ Metoco.Setting = {
 Metoco.Status = {
     current: 0,
     currentStation: "",
-    isStarted: false,
+    isMoving: false,
     intervalId: null
 };
 Metoco.Temp = {
@@ -432,6 +432,7 @@ function startView() {
         nextStation = "",
         line = document.getElementById("line").value,
         isReverse = false,
+        isStarted = false,
         points = [];
 
     points = Metoco.Data.linePoints[line];
@@ -455,9 +456,18 @@ function startView() {
     // 画像が読み込まれたらスライドをスタート
     if (!Metoco.Setting.debug) {
         document.getElementById("slide").onload = function() {
+            if (isStarted) {
+                return;
+            }
+            isStarted = true;
+            document.getElementById("slide").onload = function() {};
             startSlide(line, start, end);
         };
         setTimeout(function() {
+            if (isStarted) {
+                return;
+            }
+            isStarted = true;
             startSlide(line, start, end);
         }, 5000);
     } else {
@@ -479,10 +489,10 @@ function startSlide(line, start, end) {
         points = [];
 
     // 既に開始済みならスキップ
-    if (Metoco.Status.isStarted) {
+    if (Metoco.Status.isMoving) {
         return;
     }
-    Metoco.Status.isStarted = true;
+    Metoco.Status.isMoving = true;
 
     points = Metoco.Data.linePoints[line];
     isReverse = start > end ? true : false;
@@ -529,7 +539,7 @@ function startSlide(line, start, end) {
         if (Metoco.Status.current === end) {
             clearInterval(Metoco.Status.intervalId);
             Metoco.Status.intervalId = null;
-            Metoco.Status.isStarted = false;
+            Metoco.Status.isMoving = false;
             console.log("end");
             return;
         }
@@ -538,7 +548,7 @@ function startSlide(line, start, end) {
             Metoco.Status.currentStation = nextStation;
             clearInterval(Metoco.Status.intervalId);
             Metoco.Status.intervalId = null;
-            Metoco.Status.isStarted = false;
+            Metoco.Status.isMoving = false;
             startSlide(line, Metoco.Status.current, end);
             console.log("continue");
         }
@@ -600,7 +610,7 @@ document.getElementById("btnStop").addEventListener("click", function(e) {
     e.preventDefault();
     clearInterval(Metoco.Status.intervalId);
     Metoco.Status.intervalId = null;
-    Metoco.Status.isStarted = false;
+    Metoco.Status.isMoving = false;
     return false;
 }, false);
 document.getElementById("line").addEventListener("change", function(e) {
