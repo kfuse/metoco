@@ -528,6 +528,8 @@ function startSlide(line, start, end) {
         // 終点に到達した場合
         if (Metoco.Status.current === end) {
             clearInterval(Metoco.Status.intervalId);
+            Metoco.Status.intervalId = null;
+            Metoco.Status.isStarted = false;
             console.log("end");
             return;
         }
@@ -535,6 +537,8 @@ function startSlide(line, start, end) {
         if (Metoco.Status.current === next) {
             Metoco.Status.currentStation = nextStation;
             clearInterval(Metoco.Status.intervalId);
+            Metoco.Status.intervalId = null;
+            Metoco.Status.isStarted = false;
             startSlide(line, Metoco.Status.current, end);
             console.log("continue");
         }
