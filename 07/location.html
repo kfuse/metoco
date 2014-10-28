@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+<style>
+body {
+    margin: 0;
+    padding: 0;
+}
+.memo {
+    color: #888;
+    font-size: 13px;
+}
+#slide {
+    width: 100%;
+}
+#result {
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+ul,li {
+    margin: 0;
+    padding: 0;
+}
+.list {
+    list-style: none;
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+}
+.direction {
+    list-style: none;
+    margin: 20px;
+    padding: 5px;
+    background: #363;
+    color: #fff;
+}
+</style>
+</head>
+<body>
+
+<div id="result"></div>
+
+<script type="text/javascript" src="js/data.js"></script>
+<script type="text/javascript" src="js/slide.js"></script>
+<script type="text/javascript" src="js/util.js"></script>
+<script type="text/javascript">
+(function(){
+Metoco.Location = {
+    lat: "",
+    lon: "",
+    radius: 500,
+    stations: [],
+    station: "",
+    lines: [],
+    line: ""
+};
+
+var tryCount = 0;
+if (!navigator.geolocation) {
+    return;
+}
+navigator.geolocation.getCurrentPosition(
+function(position) {
+    Metoco.Location.lat = position.coords.latitude;
+    Metoco.Location.lon = position.coords.longitude;
+    getStation();
+},
+function() {
+    Metoco.Location.lat = "35.678156";
+    Metoco.Location.lon = "139.705678";
+    getStation();
+});
+
+function getStation() {
+    var xhr;
+
+    xhr = Metoco.Util.createXHR();
+    xhr.open("GET", "https://api.tokyometroapp.jp/api/v2/places?rdf:type=odpt:Station&lon=" + Metoco.Location.lon + "&lat=" + Metoco.Location.lat + "&radius=" + Metoco.Location.radius + "&acl:consumerKey=913f9f2f3c50040ce394a4429f9b7ccf2c27396bf213d69290b1ab2fb81523fd");
+    xhr.send(null);
+    tryCount++;
+    xhr.onreadystatechange = function() {
+        var res;
+        if (xhr.readyState === 4) {
+            if(xhr.status === 200) {
+                res = JSON.parse(xhr.responseText);
+                if (res.length === 0) {
+                    Metoco.Location.radius += 100;
+                    if (tryCount < 6) {
+                        setTimeout(getStation, 1000);
+                    }
+                }
+                showStation(res);
+            } else {
+            }
+        }
+    };
+}
+
+function showStation(res) {
+    var i = 0,
+        j = 0,
+        isNew = true,
+        html = "";
+    for (i = 0; i < res.length; i++) {
+        isNew = true;
+        for (j = 0; j < Metoco.Location.stations.length; j++) {
+            // console.log("array: " + Metoco.Location.stations[j]);
+            if (res[i]["dc:title"] === Metoco.Location.stations[j]) {
+                isNew = false;
+            }
+        }
+        // console.log("res: " + res[i]["dc:title"] + ", new: " + isNew);
+        if (isNew) {
+            Metoco.Location.stations.push(res[i]["dc:title"]);
+            continue;
+        }
+    }
+    // document.getElementById("result").innerHTML = Metoco.Location.stations;
+    html = '<ul>';
+    for (i = 0; i < Metoco.Location.stations.length; i++) {
+        html += '<li data-type="station" class="list">' + Metoco.Location.stations[i] + '</li>';
+    }
+    html += '</ul>';
+    document.getElementById("result").innerHTML = html;
+}
+
+function showLines(station, res) {
+    var i = 0,
+        j = 0,
+        line = "",
+        isNew = true,
+        html = "";
+    for (i = 0; i < res.length; i++) {
+        isNew = true;
+        if (res[i]["dc:title"] !== station) {
+            continue;
+        }
+        for (j = 0; j < Metoco.Location.lines.length; j++) {
+            if (res[i]["odpt:railway"] === Metoco.Location.lines[j]) {
+                isNew = false;
+            }
+        }
+        if (isNew) {
+            line = res[i]["odpt:railway"].replace("odpt.Railway:TokyoMetro.", "");
+            Metoco.Location.lines.push(line);
+            continue;
+        }
+    }
+    // document.getElementById("result").innerHTML = Metoco.Location.stations;
+    html = '<ul>';
+    for (i = 0; i < Metoco.Location.lines.length; i++) {
+        html += '<li data-type="line" data-value="' + Metoco.Location.lines[i] + '" class="list">' + Metoco.Data.lines[Metoco.Location.lines[i]] + '</li>';
+    }
+    html += '</ul>';
+    document.getElementById("result").innerHTML = html;
+}
+
+function onClickStation(target) {
+    var xhr = Metoco.Util.createXHR(),
+        station = target.innerHTML;
+    xhr.open("GET", "https://api.tokyometroapp.jp/api/v2/datapoints?rdf:type=odpt:Station&dc:title=" + encodeURI(station) + "&acl:consumerKey=913f9f2f3c50040ce394a4429f9b7ccf2c27396bf213d69290b1ab2fb81523fd");
+    xhr.send(null);
+    xhr.onreadystatechange = function() {
+        var res;
+        if (xhr.readyState === 4) {
+            if(xhr.status === 200) {
+                res = JSON.parse(xhr.responseText);
+                showLines(station, res);
+            } else {
+            }
+        }
+    };
+}
+
+function onClickLine(target) {
+    var i = 0,
+        li,
+        line = Metoco.Location.line,
+        terminal = "";
+    if (target.nextSibling && target.nextSibling.className === "direction") {
+        return;
+    }
+    for (i = 0; i < 2; i++) {
+        terminal = Metoco.Data.terminal[line][i];
+        li = document.createElement("li");
+        li.setAttribute("class", "direction");
+        li.setAttribute("data-type", "direction");
+        li.setAttribute("data-value", terminal);
+        li.appendChild(document.createTextNode(Metoco.Data.stationName[terminal] + "方面に乗る"));
+        target.parentNode.insertBefore(li, target.nextSibling);
+    }
+    console.log("line");
+}
+
+document.getElementById("result").addEventListener("click", function(e) {
+    var ev = e || window.event;
+    switch (ev.target.getAttribute("data-type")) {
+        case "station":
+            onClickStation(ev.target);
+            break;
+        case "line":
+            Metoco.Location.line = ev.target.getAttribute("data-value");
+            onClickLine(ev.target);
+            break;
+        default:
+            break;
+    }
+    console.log("data-type: " + ev.target.getAttribute("data-type"));
+    console.log("data-value: " + ev.target.getAttribute("data-value"));
+    console.log("innerHTML: " + ev.target.innerHTML);
+}, false);
+
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+<style>
+body {
+    max-width: 450px;
+    margin: 0;
+    padding: 0;
+}
+.memo {
+    color: #888;
+    font-size: 13px;
+}
+#slide {
+    width: 100%;
+}
+</style>
+</head>
+<body>
+
+<div>
+<img src="" id="slide">
+</div>
+<form name="theForm" id="theForm">
+路線: 
+<select id="line">
+<option value="Ginza">銀座線</option>
+<option value="Marunouchi">丸ノ内線</option>
+<option value="MarunouchiBranch">丸ノ内線(分岐線)</option>
+<option value="Hibiya">日比谷線</option>
+<option value="Tozai">東西線</option>
+<option value="Chiyoda">千代田線</option>
+<option value="Yurakucho">有楽町線</option>
+<option value="Hanzomon">半蔵門線</option>
+<option value="Namboku">南北線</option>
+<option value="Fukutoshin">副都心線</option>
+</select>
+<br>
+<!--
+方向: <input type="radio" name="direction" value="0" id="dir0" checked><label for="dir0" id="lblDir0">方面</label>
+<input type="radio" name="direction" value="1" id="dir1"><label for="dir1" id="lblDir1">方面</label><br>
+<span class="memo">メモ: 日比谷線の路線形状データは319まで存在する。</span><br>
+-->
+スタート位置: <!--<input type="text" size="3" value="0" id="iptStart">-->
+<select id="startStation"></select><br>
+終了位置: <!--<input type="text" size="3" value="10" id="iptEnd">-->
+<select id="endStation"></select><br>
+間隔: <input type="radio" name="interval" value="0" id="interval0" checked><label for="interval0">5秒間隔</label>
+<input type="radio" name="interval" value="1" id="interval1"><label for="interval1">リアルタイム</label><br>
+
+</form>
+<div>
+<a href="#" id="btnStart">開始</a> <a href="#" id="btnStop">停止</a>
+</div>
+
+<script type="text/javascript" src="js/data.js"></script>
+<script type="text/javascript" src="js/slide.js"></script>
+<script type="text/javascript">
+(function(){
+
+function setInputs() {
+    var i = 0,
+        option,
+        startStation = document.getElementById("startStation"),
+        endStation = document.getElementById("endStation"),
+        line = document.getElementById("line").value;
+    /*
+    document.getElementById("lblDir0").innerHTML = Metoco.Data.terminal[line][0] + "方面";
+    document.getElementById("lblDir1").innerHTML = Metoco.Data.terminal[line][1] + "方面";
+    */
+
+    // 駅のプルダウン
+    for (i = startStation.childNodes.length - 1; i >= 0 ; i--) {
+        startStation.removeChild(startStation.childNodes[i]);
+    }
+    for (i = endStation.childNodes.length - 1; i >= 0 ; i--) {
+        endStation.removeChild(endStation.childNodes[i]);
+    }
+    for (station in Metoco.Data.stations[line]) {
+        option = document.createElement("option");
+        option.value = station;
+        option.appendChild(document.createTextNode(station));
+        startStation.appendChild(option);
+        option = document.createElement("option");
+        option.value = station;
+        option.appendChild(document.createTextNode(station));
+        document.getElementById("endStation").appendChild(option);
+    }
+}
+
+// イベント登録
+document.getElementById("btnStart").addEventListener("click", function(e) {
+    e.preventDefault();
+    Metoco.Slide.init({
+        debug: false,
+        interval: 5000,
+        line: document.getElementById("line").value,
+        startStation: document.getElementById("startStation").value,
+        endStation: document.getElementById("endStation").value,
+        isActualTime: document.getElementById("interval1").checked ? true : false
+    });
+    Metoco.Slide.start();
+    return false;
+}, false);
+document.getElementById("btnStop").addEventListener("click", function(e) {
+    e.preventDefault();
+    Metoco.Slide.stop();
+    return false;
+}, false);
+document.getElementById("line").addEventListener("change", function(e) {
+    setInputs();
+}, false);
+window.addEventListener("load", function(e) {
+    setInputs()
+}, false);
+
+})();
+</script>
+
+</body>
+</html>
