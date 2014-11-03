@@ -131,6 +131,15 @@ Metoco.Slide.init = function(setting) {
     Metoco.Slide.Status.currentStation = Metoco.Slide.Setting.startStation;
 };
 
+function showPosition(from, to) {
+    var position = document.getElementById("position");
+    if (to === undefined) {
+        position.innerHTML = Metoco.Data.stationName[from];
+    } else {
+        position.innerHTML = Metoco.Data.stationName[from] + " >>> " + Metoco.Data.stationName[to];
+    }
+}
+
 Metoco.Slide.stop = function() {
     clearInterval(Metoco.Slide.Status.intervalId);
     Metoco.Slide.Status.intervalId = null;
@@ -213,6 +222,7 @@ function startMoving(line, start) {
     nextStation = getNextStation(line, Metoco.Slide.Status.currentStation, isReverse);
     next = Metoco.Data.stations[line][nextStation].index;
     console.log("next station: " + nextStation);
+    showPosition(Metoco.Slide.Status.currentStation, nextStation);
 
     // 間隔を取得
     if (Metoco.Slide.Setting.isActualTime) {
@@ -253,10 +263,12 @@ function startMoving(line, start) {
         if (Metoco.Slide.Status.current === end) {
             Metoco.Slide.stop();
             console.log("end");
+            showPosition(Metoco.Slide.Status.currentStation);
             return;
         }
         // 次の駅に到着した場合
         if (Metoco.Slide.Status.current === next) {
+            showPosition(Metoco.Slide.Status.currentStation);
             Metoco.Slide.Status.currentStation = nextStation;
             Metoco.Slide.stop();
             if (Metoco.Slide.Setting.isActualTime) {
