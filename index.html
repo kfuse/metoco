@@ -94,10 +94,7 @@ p, ul,li {
 <ul><li><a href="#" id="btnStop">停止</a></li></ul>
 </div>
 <div id="location">
-<ul>
-<li data-type="mode" data-value="realtime" class="mode">リアルタイム操作モード</li>
-<li data-type="mode" data-value="remote" class="mode">リモート操作モード</li>
-</ul>
+<p class="info">現在地を取得しています...</p>
 </div>
 <div id="footer">Copyright &copy; 2014, a-kai Metoco Project</div>
 
@@ -120,6 +117,7 @@ Metoco.Location = {
 };
 
 var trialCount = 0;
+getLocation();
 
 function getLocation() {
     if (!navigator.geolocation) {
@@ -285,7 +283,6 @@ function showAllStations(target, line) {
     li.setAttribute("class", "list");
     target.parentNode.insertBefore(li, target.nextSibling);
     html = '<ul>';
-    console.log(Metoco.Data.stations[line]);
     for (item in Metoco.Data.stations[line]) {
         html += '<li data-type="station" data-value="' + item + '" class="stations">' + Metoco.Data.stationName[item] + '</li>';
     }
@@ -298,7 +295,6 @@ function showAllLines() {
         html = "";
     html = '<ul>';
     for (item in Metoco.Data.lines) {
-    console.log(item);
         html += '<li data-type="line" data-value="' + item + '" class="list">' + Metoco.Data.lines[item] + '</li>';
     }
     html += '</ul>';
@@ -308,10 +304,8 @@ function showAllLines() {
 function onClickMode(target) {
     var mode = target.getAttribute("data-value");
     if (mode === "realtime") {
-        console.log("realtime-mode");
         getLocation();
     } else {
-        console.log("remote-mode");
         Metoco.Location.drillDown = true;
         Metoco.Location.isActualTime = false;
         showAllLines();
@@ -351,14 +345,10 @@ function onClickLine(target) {
         return;
     }
     showDirection(target, line);
-    console.log("line");
 }
 
 function onClickDirection(target) {
     Metoco.Location.direction = target.getAttribute("data-value");
-    console.log("line: " + Metoco.Location.line);
-    console.log("station: " + Metoco.Location.station);
-    console.log("direction: " + Metoco.Location.direction);
     Metoco.Slide.init({
         debug: false,
         interval: 5000,
