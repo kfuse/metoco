@@ -268,8 +268,8 @@ function startMoving(line, start) {
         }
         // 次の駅に到着した場合
         if (Metoco.Slide.Status.current === next) {
-            showPosition(Metoco.Slide.Status.currentStation);
             Metoco.Slide.Status.currentStation = nextStation;
+            showPosition(Metoco.Slide.Status.currentStation);
             Metoco.Slide.stop();
             if (Metoco.Slide.Setting.isActualTime) {
                 setTimeout(function() {
