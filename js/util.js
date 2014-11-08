@@ -32,5 +32,49 @@ Metoco.Util = {
         } else {
             return null;
         }
-    }
+    },
+    /**
+     * イベントを追加する
+     * @name addEvent
+     * @param {Object} el イベントを付加させるオブジェクト
+     * @param {String} type イベントタイプ
+     * @param {Function} fn イベント実行時のコールバック関数
+     */
+    addEvent: function (elm, type, fn) {
+        if (elm) {
+            if (elm.attachEvent) {
+                elm.attachEvent("on" + type, fn);
+            } else if (elm.addEventListener) {
+                elm.addEventListener(type, fn, false);
+            } else {
+                elm["on" + type] = fn;
+            }
+        }
+    },
+    /**
+     * 指定したクラス名に適合する要素の配列を返す
+     * @name getElementsByClassName
+     * @param {Object} el クラスを取得する要素
+     * @param {string} searchClass 検索するクラス
+     * @param {string} tag クラスの取得対象の要素種別
+     * @return {array} returnArr searchClass名を持つ配列
+     */
+    getElementsByClassName: function (el, searchClass, tag) {
+        if (el) {
+            var returnArr = [], els, pattern, i;
+            if (typeof document.getElementsByClassName === "function") {
+                returnArr = el.getElementsByClassName(searchClass, tag);
+            } else { 
+                tag = tag || '*';
+                els = el.getElementsByTagName(tag);
+                pattern = new RegExp('(^|\\s)' + searchClass + '(\\s|$)');
+                for (i = 0; i < els.length; i = i + 1) {
+                    if (pattern.test(els[i].className)) {
+                        returnArr.push(els[i]);
+                    }
+                }
+            }
+            return returnArr;
+        }
+    }
 };

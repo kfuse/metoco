@@ -143,7 +143,7 @@ function getLocation() {
 }
 
 // イベント登録
-document.getElementById("btnStop").addEventListener("click", function(e) {
+Metoco.Util.addEvent(document.getElementById("btnStop"), "click", function(e) {
     e.preventDefault();
     Metoco.Slide.stop();
     document.getElementById("shaso").style.display = "none";
@@ -213,6 +213,7 @@ function showStation(res) {
     }
     html += '</ul>';
     document.getElementById("location").innerHTML = html;
+    document.getElementById("msg").innerHTML = "乗車駅を選ぶ";
 }
 
 function showLines(station, res) {
@@ -244,6 +245,7 @@ function showLines(station, res) {
     }
     html += '</ul>';
     document.getElementById("location").innerHTML = html;
+    document.getElementById("msg").innerHTML = "列車を選ぶ";
 }
 
 function showDirection(target, line) {
@@ -252,8 +254,11 @@ function showDirection(target, line) {
         html = "",
         terminal = "";
     console.log(line);
+    // remove existing elements
+    hideDirection(target);
+    // create elements
     li = document.createElement("li");
-    li.setAttribute("class", "list");
+    li.setAttribute("class", "list child");
     target.parentNode.insertBefore(li, target.nextSibling);
     html = '<ul>';
     for (i = 0; i < 2; i++) {
@@ -273,21 +278,27 @@ function showDirection(target, line) {
     }
     html += '</ul>';
     li.innerHTML = html;
+    target.className = target.className.replace("close", "open");
 }
 
 function showAllStations(target, line) {
-    var item,
+    var i = 0,
+        item,
         li,
         html = "";
+    // remove existing elements
+    hideStations(target);
+    // create elements
     li = document.createElement("li");
-    li.setAttribute("class", "list");
+    li.setAttribute("class", "list child");
     target.parentNode.insertBefore(li, target.nextSibling);
     html = '<ul>';
     for (item in Metoco.Data.stations[line]) {
-        html += '<li data-type="station" data-value="' + item + '" class="stations">' + Metoco.Data.stationName[item] + '</li>';
+        html += '<li data-type="station" data-value="' + item + '" class="stations close">' + Metoco.Data.stationName[item] + '</li>';
     }
     html += '</ul>';
     li.innerHTML = html;
+    target.className = target.className.replace("close", "open");
 }
 
 function showAllLines() {
@@ -295,10 +306,36 @@ function showAllLines() {
         html = "";
     html = '<ul>';
     for (item in Metoco.Data.lines) {
-        html += '<li data-type="line" data-value="' + item + '" class="list">' + Metoco.Data.lines[item] + '</li>';
+        html += '<li data-type="line" data-value="' + item + '" class="list close">' + Metoco.Data.lines[item] + '</li>';
     }
     html += '</ul>';
     document.getElementById("location").innerHTML = html;
+    document.getElementById("msg").innerHTML = "乗車駅を選ぶ";
+}
+
+function hideDirection(target) {
+    var i = 0,
+        items = Metoco.Util.getElementsByClassName(target.parentNode, "stations", "li");
+    for(i = 0; i < items.length; i++) {
+        items[i].className = items[i].className.replace("open", "close");
+    }
+    items = Metoco.Util.getElementsByClassName(target.parentNode, "child", "li");
+    for(i = 0; i < items.length; i++) {
+        console.log(items[i]);
+        target.parentNode.removeChild(items[i]);
+    }
+}
+
+function hideStations(target) {
+    var i = 0,
+        items = Metoco.Util.getElementsByClassName(target.parentNode, "list", "li");
+    for(i = 0; i < items.length; i++) {
+        items[i].className = items[i].className.replace("open", "close");
+    }
+    items = Metoco.Util.getElementsByClassName(target.parentNode, "child", "li");
+    for(i = 0; i < items.length; i++) {
+        target.parentNode.removeChild(items[i]);
+    }
 }
 
 function onClickMode(target) {
@@ -316,7 +353,12 @@ function onClickStation(target) {
     var xhr = Metoco.Util.createXHR(),
         station = target.innerHTML;
     Metoco.Location.station = target.getAttribute("data-value");
+    if (target.className.match(/open/)) {
+        hideDirection(target);
+        return;
+    }
     if (Metoco.Location.drillDown) {
+        target.className = target.className.replace("close", "open");
         showDirection(target, Metoco.Location.line);
         return;
     }
@@ -337,11 +379,13 @@ function onClickStation(target) {
 function onClickLine(target) {
     var line = target.getAttribute("data-value");
     Metoco.Location.line = line;
-    if (Metoco.Location.drillDown) {
-        showAllStations(target, line);
+    if (target.className.match(/open/)) {
+        hideStations(target);
         return;
     }
-    if (target.nextSibling && target.nextSibling.className === "direction") {
+    if (Metoco.Location.drillDown) {
+        target.className = target.className.replace("close", "open");
+        showAllStations(target, line);
         return;
     }
     showDirection(target, line);
@@ -363,7 +407,7 @@ function onClickDirection(target) {
     Metoco.Slide.start();
 }
 
-document.getElementById("location").addEventListener("click", function(e) {
+Metoco.Util.addEvent(document.getElementById("location"), "click", function(e) {
     var ev = e || window.event;
     switch (ev.target.getAttribute("data-type")) {
         case "mode":
