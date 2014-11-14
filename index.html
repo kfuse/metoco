@@ -40,7 +40,12 @@ body {
 }
 #location {
     margin-top: 20px;
+    margin-bottom: 10px;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+#btnArea {
+    padding: 20px;
+    text-align: center;
 }
 p, ul,li {
     margin: 0;
@@ -91,7 +96,6 @@ p, ul,li {
 <div id="shaso">
 <img src="" id="slide">
 <p id="position"><p>
-<ul><li><a href="#" id="btnStop">停止</a></li></ul>
 </div>
 <div id="location">
 <ul>
@@ -99,6 +103,7 @@ p, ul,li {
 <li data-type="mode" data-value="remote" class="mode">路線名から乗車駅を選ぶ</li>
 </ul>
 </div>
+<div id="btnArea"></div>
 <div id="footer">Copyright &copy; 2014, a-kai Metoco Project</div>
 
 <script type="text/javascript" src="js/data.js"></script>
@@ -147,15 +152,6 @@ function getLocation() {
     );
 }
 
-// イベント登録
-Metoco.Util.addEvent(document.getElementById("btnStop"), "click", function(e) {
-    e.preventDefault();
-    Metoco.Slide.stop();
-    document.getElementById("shaso").style.display = "none";
-    showMenu();
-    return false;
-}, false);
-
 function getStation() {
     var xhr = Metoco.Util.createXHR();
     xhr.open("GET", "https://api.tokyometroapp.jp/api/v2/places?rdf:type=odpt:Station&lon=" + Metoco.Location.lon + "&lat=" + Metoco.Location.lat + "&radius=" + Metoco.Location.radius + "&acl:consumerKey=913f9f2f3c50040ce394a4429f9b7ccf2c27396bf213d69290b1ab2fb81523fd");
@@ -201,6 +197,10 @@ function showMenu() {
     document.getElementById("location").style.display = "block";
 }
 
+function refreshBtnArea() {
+    document.getElementById("btnArea").innerHTML = "";
+}
+
 function showStation(res) {
     var i = 0,
         j = 0,
@@ -229,6 +229,7 @@ function showStation(res) {
     }
     html += '</ul>';
     document.getElementById("location").innerHTML = html;
+    document.getElementById("btnArea").innerHTML = '<span id="otherStation">その他の乗車駅を選ぶ</span>';
     document.getElementById("msg").innerHTML = "乗車駅を選ぶ";
 }
 
@@ -368,6 +369,7 @@ function onClickStation(target) {
     var xhr = Metoco.Util.createXHR(),
         station = target.innerHTML;
     Metoco.Location.station = target.getAttribute("data-value");
+    refreshBtnArea();
     if (target.className.match(/open/)) {
         hideDirection(target);
         return;
@@ -416,11 +418,34 @@ function onClickDirection(target) {
         endStation: Metoco.Location.direction,
         isActualTime: Metoco.Location.isActualTime
     });
+
+    document.getElementById("btnArea").innerHTML = '<span id="btnStop">トップへ戻る</span>';
     document.getElementById("shaso").style.display = "block";
     document.getElementById("location").style.display = "none";
     document.getElementById("msg").innerHTML = "メトロの車窓から";
     Metoco.Slide.start();
 }
+
+// イベント登録
+Metoco.Util.addEvent(document.getElementById("btnArea"), "click", function(e) {
+    var ev = e || window.event;
+    ev.preventDefault();
+    switch (ev.target.getAttribute("id")) {
+        case "btnStop":
+            Metoco.Slide.stop();
+            document.getElementById("shaso").style.display = "none";
+            showMenu();
+            break;
+        case "otherStation":
+            Metoco.Location.drillDown = true;
+            showAllLines();
+            break;
+        default:
+            break;
+    }
+    refreshBtnArea();
+    return false;
+}, false);
 
 Metoco.Util.addEvent(document.getElementById("location"), "click", function(e) {
     var ev = e || window.event;
