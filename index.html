@@ -87,14 +87,17 @@ p, ul,li {
 </head>
 <body>
 
-<div id="header"><p id="msg"></p></div>
+<div id="header"><p id="msg">メトロの車窓から</p></div>
 <div id="shaso">
 <img src="" id="slide">
 <p id="position"><p>
 <ul><li><a href="#" id="btnStop">停止</a></li></ul>
 </div>
 <div id="location">
-<p class="info">現在地を取得しています...</p>
+<ul>
+<li data-type="mode" data-value="realtime" class="mode">位置情報から乗車駅を選ぶ</li>
+<li data-type="mode" data-value="remote" class="mode">路線名から乗車駅を選ぶ</li>
+</ul>
 </div>
 <div id="footer">Copyright &copy; 2014, a-kai Metoco Project</div>
 
@@ -117,10 +120,12 @@ Metoco.Location = {
 };
 
 var trialCount = 0;
-getLocation();
+// getLocation();
 
 function getLocation() {
     if (!navigator.geolocation) {
+        Metoco.Location.drillDown = true;
+        showAllLines();
         return;
     }
     showLoading();
@@ -147,7 +152,7 @@ Metoco.Util.addEvent(document.getElementById("btnStop"), "click", function(e) {
     e.preventDefault();
     Metoco.Slide.stop();
     document.getElementById("shaso").style.display = "none";
-    document.getElementById("location").style.display = "block";
+    showMenu();
     return false;
 }, false);
 
@@ -183,6 +188,17 @@ function getStation() {
 
 function showLoading() {
     document.getElementById("location").innerHTML = '<p class="info">現在地を取得しています...</p>';
+}
+
+function showMenu() {
+    var html = "";
+    html = '<ul>';
+    html += '<li data-type="mode" data-value="realtime" class="mode">位置情報から乗車駅を選ぶ</li>';
+    html += '<li data-type="mode" data-value="remote" class="mode">路線名から乗車駅を選ぶ</li>';
+    html += '</ul>';
+    document.getElementById("msg").innerHTML = "メトロの車窓から";
+    document.getElementById("location").innerHTML = html;
+    document.getElementById("location").style.display = "block";
 }
 
 function showStation(res) {
@@ -253,7 +269,7 @@ function showDirection(target, line) {
         li,
         html = "",
         terminal = "";
-    console.log(line);
+    console.log("line: " + line);
     // remove existing elements
     hideDirection(target);
     // create elements
@@ -321,7 +337,6 @@ function hideDirection(target) {
     }
     items = Metoco.Util.getElementsByClassName(target.parentNode, "child", "li");
     for(i = 0; i < items.length; i++) {
-        console.log(items[i]);
         target.parentNode.removeChild(items[i]);
     }
 }
@@ -344,7 +359,7 @@ function onClickMode(target) {
         getLocation();
     } else {
         Metoco.Location.drillDown = true;
-        Metoco.Location.isActualTime = false;
+        // Metoco.Location.isActualTime = false;
         showAllLines();
     }
 }
