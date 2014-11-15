@@ -3,475 +3,55 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
-<style>
-body {
-    margin: 0;
-    padding: 0;
-}
-#header {
-    height: 50px;
-    border-bottom: 1px solid ddd;
-    background: #e9e9e9;
-}
-#footer {
-    margin-top: 20px;
-    padding: 15px;
-    border-top: 1px solid ddd;
-    background: #e9e9e9;
-    text-align: center;
-}
-#msg {
-    padding-top: 15px;
-    font-weight: bold;
-    text-align: center;
-}
-.memo {
-    color: #888;
-    font-size: 13px;
-}
-.info {
-    margin: 20px;
-}
-#shaso {
-    display: none;
-}
-#slide {
-    width: 100%;
-}
-#location {
-    margin-top: 20px;
-    margin-bottom: 10px;
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-}
-#btnArea {
-    padding: 20px;
-    text-align: center;
-}
-p, ul,li {
-    margin: 0;
-    padding: 0;
-}
-.mode {
-    list-style: none;
-    margin: 10px;
-    padding: 15px;
-    border: 1px solid #ddd;
-}
-.list {
-    list-style: none;
-    padding: 15px;
-    border-top: 1px solid #ddd;
-    border-right: 1px solid #ddd;
-    border-left: 1px solid #ddd;
-}
-.list:last-child {
-    border-bottom: 1px solid #ddd;
-}
-.stations {
-    list-style: none;
-    padding: 10px;
-    border-top: 1px solid #ddd;
-    border-right: 1px solid #ddd;
-    border-left: 1px solid #ddd;
-}
-.stations:last-child {
-    border-bottom: 1px solid #ddd;
-}
-.direction {
-    list-style: none;
-    margin-bottom: 5px;
-    padding: 5px;
-    background: #363;
-    color: #fff;
-    text-align: center;
-}
-.direction:last-child {
-    margin-bottom: 0;
-}
-</style>
+<link rel="shortcut icon" href="http://a-kai.net/metoco/favicon.ico">
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+<script type="text/javascript" src="js/jquery.bgswitcher.js"></script>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div id="header"><p id="msg">メトロの車窓から</p></div>
-<div id="shaso">
+<div id="wrapper" class="start ui-page-active" data-role="page" data-title="メトロの車窓から">
+
+<div id="header" data-role="header">
+<div id="title"><img src="img/title.png" alt="メトロの車窓から"></div>
+<p id="msg"></p>
+</div>
+
+<div id="result">
 <img src="" id="slide">
 <p id="position"><p>
 </div>
+
+<div id="shaso" role="main" class="ui-content">
+<div id="logo"><img src="img/logo.png" alt="メトロの車窓から"></div>
+<div id="welcome">地下鉄に乗りながら地上の車窓の風景を<span>楽しむことができるアプリです</span></div>
+<div id="start-btn">
+<a href="#" data-type="mode" data-value="realtime" class="mode ui-btn">位置情報から乗車駅を選ぶ</a>
+<a href="#" data-type="mode" data-value="remote" class="mode ui-btn">路線名から乗車駅を選ぶ</a>
+</div>
+<div id="location"></div>
+</div>
+
+<!--
 <div id="location">
 <ul>
 <li data-type="mode" data-value="realtime" class="mode">位置情報から乗車駅を選ぶ</li>
 <li data-type="mode" data-value="remote" class="mode">路線名から乗車駅を選ぶ</li>
 </ul>
 </div>
+-->
 <div id="btnArea"></div>
-<div id="footer">Copyright &copy; 2014, a-kai Metoco Project</div>
+
+<div id="footer" data-role="footer">Copyright &copy; 2014, a-kai Metoco Project</div>
+
+</div>
 
 <script type="text/javascript" src="js/data.js"></script>
 <script type="text/javascript" src="js/slide.js"></script>
 <script type="text/javascript" src="js/util.js"></script>
-<script type="text/javascript">
-(function(){
-Metoco.Location = {
-    lat: "",
-    lon: "",
-    radius: 500,
-    stations: [],
-    station: "",
-    lines: [],
-    line: "",
-    direction: "",
-    drillDown: false,
-    isActualTime: true
-};
-
-var trialCount = 0;
-// getLocation();
-
-function getLocation() {
-    if (!navigator.geolocation) {
-        Metoco.Location.drillDown = true;
-        showAllLines();
-        return;
-    }
-    showLoading();
-    navigator.geolocation.getCurrentPosition(
-        function(position) {
-            Metoco.Location.lat = position.coords.latitude;
-            Metoco.Location.lon = position.coords.longitude;
-            getStation();
-        },
-        function() {
-            Metoco.Location.drillDown = true;
-            showAllLines();
-            /*
-            Metoco.Location.lat = "35.678156";
-            Metoco.Location.lon = "139.705678";
-            getStation();
-            */
-        }
-    );
-}
-
-function getStation() {
-    var xhr = Metoco.Util.createXHR();
-    xhr.open("GET", "https://api.tokyometroapp.jp/api/v2/places?rdf:type=odpt:Station&lon=" + Metoco.Location.lon + "&lat=" + Metoco.Location.lat + "&radius=" + Metoco.Location.radius + "&acl:consumerKey=913f9f2f3c50040ce394a4429f9b7ccf2c27396bf213d69290b1ab2fb81523fd");
-    xhr.send(null);
-    trialCount++;
-    xhr.onreadystatechange = function() {
-        var res;
-        if (xhr.readyState === 4) {
-            if(xhr.status === 200) {
-                res = JSON.parse(xhr.responseText);
-                if (res.length === 0) {
-                    Metoco.Location.radius += 100;
-                    if (trialCount < 6) {
-                        setTimeout(getStation, 1000);
-                        console.log(trialCount);
-                    } else {
-                        Metoco.Location.drillDown = true;
-                        showAllLines();
-                    }
-                    return;
-                }
-                showStation(res);
-            } else {
-                Metoco.Location.drillDown = true;
-                showAllLines();
-            }
-        }
-    };
-}
-
-function showLoading() {
-    document.getElementById("location").innerHTML = '<p class="info">現在地を取得しています...</p>';
-}
-
-function showMenu() {
-    var html = "";
-    html = '<ul>';
-    html += '<li data-type="mode" data-value="realtime" class="mode">位置情報から乗車駅を選ぶ</li>';
-    html += '<li data-type="mode" data-value="remote" class="mode">路線名から乗車駅を選ぶ</li>';
-    html += '</ul>';
-    document.getElementById("msg").innerHTML = "メトロの車窓から";
-    document.getElementById("location").innerHTML = html;
-    document.getElementById("location").style.display = "block";
-}
-
-function refreshBtnArea() {
-    document.getElementById("btnArea").innerHTML = "";
-}
-
-function showStation(res) {
-    var i = 0,
-        j = 0,
-        isNew = true,
-        station = "",
-        html = "";
-    for (i = 0; i < res.length; i++) {
-        isNew = true;
-        station = res[i]["owl:sameAs"].split(".")[3];
-        for (j = 0; j < Metoco.Location.stations.length; j++) {
-            // console.log("array: " + Metoco.Location.stations[j]);
-            if (station === Metoco.Location.stations[j]) {
-                isNew = false;
-            }
-        }
-        // console.log("res: " + res[i]["dc:title"] + ", new: " + isNew);
-        if (isNew) {
-            Metoco.Location.stations.push(station);
-            continue;
-        }
-    }
-    // document.getElementById("location").innerHTML = Metoco.Location.stations;
-    html = '<ul>';
-    for (i = 0; i < Metoco.Location.stations.length; i++) {
-        html += '<li data-type="station" data-value="' + Metoco.Location.stations[i] + '" class="list">' + Metoco.Data.stationName[Metoco.Location.stations[i]] + '</li>';
-    }
-    html += '</ul>';
-    document.getElementById("location").innerHTML = html;
-    document.getElementById("btnArea").innerHTML = '<span id="otherStation">その他の乗車駅を選ぶ</span>';
-    document.getElementById("msg").innerHTML = "乗車駅を選ぶ";
-}
-
-function showLines(station, res) {
-    var i = 0,
-        j = 0,
-        line = "",
-        isNew = true,
-        html = "";
-    for (i = 0; i < res.length; i++) {
-        isNew = true;
-        if (res[i]["dc:title"] !== station) {
-            continue;
-        }
-        for (j = 0; j < Metoco.Location.lines.length; j++) {
-            if (res[i]["odpt:railway"] === Metoco.Location.lines[j]) {
-                isNew = false;
-            }
-        }
-        if (isNew) {
-            line = res[i]["odpt:railway"].replace("odpt.Railway:TokyoMetro.", "");
-            Metoco.Location.lines.push(line);
-            continue;
-        }
-    }
-    // document.getElementById("location").innerHTML = Metoco.Location.stations;
-    html = '<ul>';
-    for (i = 0; i < Metoco.Location.lines.length; i++) {
-        html += '<li data-type="line" data-value="' + Metoco.Location.lines[i] + '" class="list">' + Metoco.Data.lines[Metoco.Location.lines[i]] + '</li>';
-    }
-    html += '</ul>';
-    document.getElementById("location").innerHTML = html;
-    document.getElementById("msg").innerHTML = "列車を選ぶ";
-}
-
-function showDirection(target, line) {
-    var i = 0,
-        li,
-        html = "",
-        terminal = "";
-    console.log("line: " + line);
-    // remove existing elements
-    hideDirection(target);
-    // create elements
-    li = document.createElement("li");
-    li.setAttribute("class", "list child");
-    target.parentNode.insertBefore(li, target.nextSibling);
-    html = '<ul>';
-    for (i = 0; i < 2; i++) {
-        terminal = Metoco.Data.terminal[line][i];
-        if (Metoco.Location.station === terminal) {
-            continue;
-        }
-        html += '<li data-type="direction" data-value="' + terminal + '" class="direction">' + Metoco.Data.stationName[terminal] + '方面に乗る' + '</li>';
-        /*
-        li = document.createElement("li");
-        li.setAttribute("class", "direction");
-        li.setAttribute("data-type", "direction");
-        li.setAttribute("data-value", terminal);
-        li.appendChild(document.createTextNode(Metoco.Data.stationName[terminal] + "方面に乗る"));
-        target.parentNode.insertBefore(li, target.nextSibling);
-        */
-    }
-    html += '</ul>';
-    li.innerHTML = html;
-    target.className = target.className.replace("close", "open");
-}
-
-function showAllStations(target, line) {
-    var i = 0,
-        item,
-        li,
-        html = "";
-    // remove existing elements
-    hideStations(target);
-    // create elements
-    li = document.createElement("li");
-    li.setAttribute("class", "list child");
-    target.parentNode.insertBefore(li, target.nextSibling);
-    html = '<ul>';
-    for (item in Metoco.Data.stations[line]) {
-        html += '<li data-type="station" data-value="' + item + '" class="stations close">' + Metoco.Data.stationName[item] + '</li>';
-    }
-    html += '</ul>';
-    li.innerHTML = html;
-    target.className = target.className.replace("close", "open");
-}
-
-function showAllLines() {
-    var item,
-        html = "";
-    html = '<ul>';
-    for (item in Metoco.Data.lines) {
-        html += '<li data-type="line" data-value="' + item + '" class="list close">' + Metoco.Data.lines[item] + '</li>';
-    }
-    html += '</ul>';
-    document.getElementById("location").innerHTML = html;
-    document.getElementById("msg").innerHTML = "乗車駅を選ぶ";
-}
-
-function hideDirection(target) {
-    var i = 0,
-        items = Metoco.Util.getElementsByClassName(target.parentNode, "stations", "li");
-    for(i = 0; i < items.length; i++) {
-        items[i].className = items[i].className.replace("open", "close");
-    }
-    items = Metoco.Util.getElementsByClassName(target.parentNode, "child", "li");
-    for(i = 0; i < items.length; i++) {
-        target.parentNode.removeChild(items[i]);
-    }
-}
-
-function hideStations(target) {
-    var i = 0,
-        items = Metoco.Util.getElementsByClassName(target.parentNode, "list", "li");
-    for(i = 0; i < items.length; i++) {
-        items[i].className = items[i].className.replace("open", "close");
-    }
-    items = Metoco.Util.getElementsByClassName(target.parentNode, "child", "li");
-    for(i = 0; i < items.length; i++) {
-        target.parentNode.removeChild(items[i]);
-    }
-}
-
-function onClickMode(target) {
-    var mode = target.getAttribute("data-value");
-    if (mode === "realtime") {
-        getLocation();
-    } else {
-        Metoco.Location.drillDown = true;
-        // Metoco.Location.isActualTime = false;
-        showAllLines();
-    }
-}
-
-function onClickStation(target) {
-    var xhr = Metoco.Util.createXHR(),
-        station = target.innerHTML;
-    Metoco.Location.station = target.getAttribute("data-value");
-    refreshBtnArea();
-    if (target.className.match(/open/)) {
-        hideDirection(target);
-        return;
-    }
-    if (Metoco.Location.drillDown) {
-        target.className = target.className.replace("close", "open");
-        showDirection(target, Metoco.Location.line);
-        return;
-    }
-    xhr.open("GET", "https://api.tokyometroapp.jp/api/v2/datapoints?rdf:type=odpt:Station&dc:title=" + encodeURI(station) + "&acl:consumerKey=913f9f2f3c50040ce394a4429f9b7ccf2c27396bf213d69290b1ab2fb81523fd");
-    xhr.send(null);
-    xhr.onreadystatechange = function() {
-        var res;
-        if (xhr.readyState === 4) {
-            if(xhr.status === 200) {
-                res = JSON.parse(xhr.responseText);
-                showLines(station, res);
-            } else {
-            }
-        }
-    };
-}
-
-function onClickLine(target) {
-    var line = target.getAttribute("data-value");
-    Metoco.Location.line = line;
-    if (target.className.match(/open/)) {
-        hideStations(target);
-        return;
-    }
-    if (Metoco.Location.drillDown) {
-        target.className = target.className.replace("close", "open");
-        showAllStations(target, line);
-        return;
-    }
-    showDirection(target, line);
-}
-
-function onClickDirection(target) {
-    Metoco.Location.direction = target.getAttribute("data-value");
-    Metoco.Slide.init({
-        debug: false,
-        interval: 5000,
-        line: Metoco.Location.line,
-        startStation: Metoco.Location.station,
-        endStation: Metoco.Location.direction,
-        isActualTime: Metoco.Location.isActualTime
-    });
-
-    document.getElementById("btnArea").innerHTML = '<span id="btnStop">トップへ戻る</span>';
-    document.getElementById("shaso").style.display = "block";
-    document.getElementById("location").style.display = "none";
-    document.getElementById("msg").innerHTML = "メトロの車窓から";
-    Metoco.Slide.start();
-}
-
-// イベント登録
-Metoco.Util.addEvent(document.getElementById("btnArea"), "click", function(e) {
-    var ev = e || window.event;
-    ev.preventDefault();
-    switch (ev.target.getAttribute("id")) {
-        case "btnStop":
-            Metoco.Slide.stop();
-            document.getElementById("shaso").style.display = "none";
-            showMenu();
-            break;
-        case "otherStation":
-            Metoco.Location.drillDown = true;
-            showAllLines();
-            break;
-        default:
-            break;
-    }
-    refreshBtnArea();
-    return false;
-}, false);
-
-Metoco.Util.addEvent(document.getElementById("location"), "click", function(e) {
-    var ev = e || window.event;
-    switch (ev.target.getAttribute("data-type")) {
-        case "mode":
-            onClickMode(ev.target);
-            break;
-        case "station":
-            onClickStation(ev.target);
-            break;
-        case "line":
-            onClickLine(ev.target);
-            break;
-        case "direction":
-            onClickDirection(ev.target);
-            break;
-        default:
-            break;
-    }
-    console.log("data-type: " + ev.target.getAttribute("data-type"));
-    console.log("data-value: " + ev.target.getAttribute("data-value"));
-    console.log("innerHTML: " + ev.target.innerHTML);
-}, false);
-
-})();
-</script>
+<script type="text/javascript" src="js/app.js"></script>
 
 </body>
 </html>

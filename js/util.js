@@ -34,6 +34,34 @@ Metoco.Util = {
         }
     },
     /**
+     * イベントをキャンセルする
+     * @name preventDefault
+     * @static
+     * @param {Object} e イベントオブジェクト
+     */
+    preventDefault: function (e) {
+        var eo = e || window.event;
+        if (eo.preventDefault) {
+            eo.preventDefault();
+        } else {
+            eo.returnValue = false;
+        }
+    },
+    /**
+     * イベントの伝播をキャンセルする
+     * @name stopPropagation
+     * @static
+     * @param {Object} e イベントオブジェクト
+     */
+    stopPropagation: function (e) {
+        var eo = e || window.event;
+        if (eo.stopPropagation) {
+            eo.stopPropagation();
+        } else { 
+            eo.cancelBubble = false;
+        }
+    },
+    /**
      * イベントを追加する
      * @name addEvent
      * @param {Object} el イベントを付加させるオブジェクト
@@ -49,6 +77,32 @@ Metoco.Util = {
             } else {
                 elm["on" + type] = fn;
             }
+        }
+    },
+    /**
+     * 指定したクラス名を追加する
+     * @name addClass
+     * @static
+     * @param {Object} el 
+     * @param {String} className 
+     */ 
+    addClass: function (el, className) {
+        if (el) {
+            if (!el.className.match(className)) {
+                el.className += ' ' + className;
+            }
+        }
+    },
+    /**
+     * 指定したクラス名を削除する
+     * @name removeClass
+     * @static
+     * @param {Object} el The CSS selector string or DOM node
+     * @param {String} className The class name.
+     */ 
+    removeClass: function (el, className) {
+        if (el) {
+            el.className = el.className.replace(className, '').replace(/^\s+|\s+$/g, "");
         }
     },
     /**
