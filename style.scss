@@ -27,9 +27,9 @@ div[data-role="page"]{
 	text-align: center;
 	.loadingImg {
 		display: inline;
-		padding: 5px 0 5px 30px;
-		background: url(http://code.jquery.com/mobile/1.4.5/images/ajax-loader.gif) 0 0 no-repeat;
-		background-size: 23px 23px;
+		padding: 0 0 0 24px;
+		background: url(img/loading.gif) 0 0 no-repeat;
+		background-size: 16px 16px;
 		line-height: 1.8;
 	}
 }
@@ -41,7 +41,7 @@ div[data-role="page"]{
 	#btn-prev{
 		display: none;
 		padding:17px;
-		background-color:#00B3FF;
+		background-color:#fff;
 		border:none;
 		border-radius:5px
 	}
@@ -310,7 +310,7 @@ div[data-role="page"]{
 	width: 90%;
 	text-align: center;
 	a{
-		background-color: #00B3FF;
+		background-color: #fff;
 		border: none;
 		color: #fff;
 		text-shadow: 0 0 0 #000;
@@ -349,7 +349,6 @@ div[data-role="page"]{
 // スタート画面
 .start{
 	margin: 0 auto;
-	// width: 320px;
 	height: 100%;
 	background-color: #fff;
 	background-position: center 0;
@@ -374,6 +373,7 @@ div[data-role="page"]{
 		text-align: center;
 		line-height: 1.75;
 		color: #fff;
+		font-weight: bold;
 		span{
 			display: block;
 		}
@@ -392,7 +392,6 @@ div[data-role="page"]{
 		background-color: transparent;
 	}
 	#footer{
-		// width: 320px;
 		width: 100%;
 		@media screen and (max-device-width: 640px) {
 			width: 100%;

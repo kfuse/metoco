@@ -3,17 +3,27 @@ Metoco.Location = {
     lat: "",
     lon: "",
     radius: 500,
+    // radius: 2000,
     stations: [],
     station: "",
     lines: [],
     line: "",
     direction: "",
     drillDown: false,
-    isActualTime: true
+    isActualTime: true,
+    scene: ""
 };
 
 var trialCount = 0;
 // getLocation();
+$(function() {
+    var array = ["img/bg1.jpg","img/bg2.jpg","img/bg3.jpg","img/bg4.jpg","img/bg5.jpg"];
+    var l=array.length;
+    var r=Math.floor(Math.random()*l);
+    var imgurl = "url("+array[r]+")";
+    $(".start").css({"background-image":imgurl});
+});
+/*
 jQuery(function($) {
 $('.start').bgSwitcher({
 images: ['img/bg1.jpg', 'img/bg2.jpg', 'img/bg3.jpg', 'img/bg4.jpg', 'img/bg5.jpg'],
@@ -21,6 +31,7 @@ interval: 4000,
 effect: "fade"
 });
 });
+*/
 
 function getLocation() {
     if (!navigator.geolocation) {
@@ -36,6 +47,7 @@ function getLocation() {
             getStation();
         },
         function() {
+            hideMenu();
             Metoco.Location.drillDown = true;
             showAllLines();
             /*
@@ -49,7 +61,17 @@ function getLocation() {
 
 function getStation() {
     var xhr = Metoco.Util.createXHR();
+    try {
     xhr.open("GET", "https://api.tokyometroapp.jp/api/v2/places?rdf:type=odpt:Station&lon=" + Metoco.Location.lon + "&lat=" + Metoco.Location.lat + "&radius=" + Metoco.Location.radius + "&acl:consumerKey=913f9f2f3c50040ce394a4429f9b7ccf2c27396bf213d69290b1ab2fb81523fd");
+    } catch (e) {
+        document.getElementById("loading").innerHTML = '<p>データの取得に失敗しました</p>';
+        setTimeout(function() {
+            Metoco.Location.drillDown = true;
+            hideMenu();
+            showAllLines();
+        }, 1000);
+        return;
+    }
     xhr.send(null);
     trialCount++;
     xhr.onreadystatechange = function() {
@@ -61,27 +83,42 @@ function getStation() {
                     Metoco.Location.radius += 100;
                     if (trialCount < 6) {
                         setTimeout(getStation, 1000);
-                        console.log(trialCount);
+                        // console.log(trialCount);
                     } else {
-                        Metoco.Location.drillDown = true;
-                        showAllLines();
+                        document.getElementById("loading").innerHTML = '<p>現在地の取得に失敗しました</p>';
+                        setTimeout(function() {
+                            Metoco.Location.drillDown = true;
+                            hideMenu();
+                            showAllLines();
+                        }, 1000);
                     }
                     return;
                 }
+                hideMenu();
                 showStation(res);
             } else {
-                Metoco.Location.drillDown = true;
-                showAllLines();
+                document.getElementById("loading").innerHTML = '<p>現在地の取得に失敗しました</p>';
+                setTimeout(function() {
+                    Metoco.Location.drillDown = true;
+                    hideMenu();
+                    showAllLines();
+                }, 1000);
             }
         }
     };
 }
 
 function showLoading() {
-    // document.getElementById("location").innerHTML = '<p class="info">現在地を取得しています...</p>';
+    document.getElementById("start-btn").style.display = "none";
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("loading").innerHTML = '<p class="loadingImg">現在地を取得しています...</p>';
 }
 
 function showMenu() {
+    var array = ["img/bg1.jpg","img/bg2.jpg","img/bg3.jpg","img/bg4.jpg","img/bg5.jpg"],
+        l = array.length,
+        r = Math.floor(Math.random()*l),
+        imgurl = "url("+array[r]+")";
     /*
     var html = "";
     html = '<ul>';
@@ -92,27 +129,34 @@ function showMenu() {
     // document.getElementById("msg").innerHTML = "メトロの車窓から";
     // document.getElementById("location").innerHTML = html;
     // document.getElementById("location").style.display = "block";
+    trialCount = 0;
+    $(".start").css({"background-image":imgurl});
     resetSetting();
     document.getElementById("header").style.display = "none";
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("btn-prev").style.display = "none";
     document.getElementById("logo").style.display = "block";
     document.getElementById("welcome").style.display = "block";
     document.getElementById("start-btn").style.display = "block";
-    $('.start').bgSwitcher("start");
+    // $('.start').bgSwitcher("start");
     Metoco.Util.addClass(document.getElementById("wrapper"), "start");
 }
 
 function hideMenu() {
+    document.getElementById("wrapper").style.backgroundImage = "";
     document.getElementById("header").style.display = "block";
+    document.getElementById("loading").style.display = "none";
     document.getElementById("location").style.display = "block";
     document.getElementById("logo").style.display = "none";
     document.getElementById("welcome").style.display = "none";
     document.getElementById("start-btn").style.display = "none";
-    $('.start').bgSwitcher("stop");
+    document.getElementById("btn-back").innerHTML = '<a href="#" class="ui-btn" id="btnTop">スタート画面に戻る</a>';
+    // $('.start').bgSwitcher("stop");
     Metoco.Util.removeClass(document.getElementById("wrapper"), "start");
 }
 
 function refreshBtnArea() {
-    document.getElementById("btnArea").innerHTML = "";
+    document.getElementById("btn-back").innerHTML = "";
 }
 
 function resetSetting() {
@@ -125,6 +169,32 @@ function resetSetting() {
     Metoco.Location.direction = "";
     Metoco.Location.drillDown = false;
     Metoco.Location.isActualTime = true;
+    Metoco.Location.scene = "";
+}
+
+function setScene(scene) {
+    switch (scene) {
+        case "line":
+            document.getElementById("wrapper").setAttribute("data-title", "路線を選んでください");
+            // document.getElementById("wrapper").dataset.title = "路線を選んでください";
+            document.getElementById("msg").innerHTML = "路線を選んでください";
+            Metoco.Location.scene = "line";
+            break;
+        case "station":
+            document.getElementById("wrapper").setAttribute("data-title", "乗車駅を選んでください");
+            // document.getElementById("wrapper").dataset.title = "乗車駅を選んでください";
+            document.getElementById("msg").innerHTML = "乗車駅を選んでください";
+            Metoco.Location.scene = "station";
+            break;
+        case "direction":
+            document.getElementById("wrapper").setAttribute("data-title", "進行方向を選んでください");
+            // document.getElementById("wrapper").dataset.title = "進行方向を選んでください";
+            document.getElementById("msg").innerHTML = "進行方向を選んでください";
+            Metoco.Location.scene = "direction";
+            break;
+        default:
+            break;
+    }
 }
 
 function showStation(res) {
@@ -149,14 +219,13 @@ function showStation(res) {
         }
     }
     // document.getElementById("location").innerHTML = Metoco.Location.stations;
-    html = '<ul class="' + Metoco.Location.line + '">';
     for (i = 0; i < Metoco.Location.stations.length; i++) {
-        html += '<li data-type="station" data-value="' + Metoco.Location.stations[i] + '" class="list"><a href="#" class="ui-btn">' + Metoco.Data.stationName[Metoco.Location.stations[i]] + '</a></li>';
+        html += '<a data-type="station" data-value="' + Metoco.Location.stations[i] + '" class="list ui-btn">' + Metoco.Data.stationName[Metoco.Location.stations[i]] + '</a>';
     }
-    html += '</ul>';
     document.getElementById("location").innerHTML = html;
-    document.getElementById("btnArea").innerHTML = '<span id="otherStation">その他の乗車駅を選ぶ</span>';
-    document.getElementById("msg").innerHTML = "乗車駅を選ぶ";
+    // document.getElementById("btn-back").innerHTML = '<a href="#" class="ui-btn" id="otherStation">その他の乗車駅を選ぶ</a>';
+    document.getElementById("btn-back").innerHTML = '<a href="#" class="ui-btn" id="btnTop">スタート画面に戻る</a>';
+    setScene("station");
 }
 
 function showLines(station, res) {
@@ -184,80 +253,12 @@ function showLines(station, res) {
     // document.getElementById("location").innerHTML = Metoco.Location.stations;
     html = '<ul>';
     for (i = 0; i < Metoco.Location.lines.length; i++) {
-        html += '<li data-type="line" data-value="' + Metoco.Location.lines[i] + '" class="list">' + Metoco.Data.lines[Metoco.Location.lines[i]] + '</li>';
+        html += '<li data-type="line" data-value="' + Metoco.Location.lines[i] + '" class="list close"><a href="#" class="ui-btn">' + Metoco.Data.lines[Metoco.Location.lines[i]] + '</a></li>';
     }
     html += '</ul>';
+    document.getElementById("btn-prev").style.display = "block";
     document.getElementById("location").innerHTML = html;
-    document.getElementById("msg").innerHTML = "列車を選ぶ";
-}
-
-function showDirection(target, line) {
-    var i = 0,
-        a,
-        li,
-        html = "",
-        terminal = "";
-    console.log("line: " + line);
-    // remove existing elements
-    hideDirection(target);
-    // create elements
-    /*
-    li = document.createElement("li");
-    li.setAttribute("class", "list child");
-    target.parentNode.insertBefore(li, target.nextSibling);
-    html = '<ul>';
-    */
-    if (Metoco.Util.getElementsByClassName(target, "direction", "a").length === 0) {
-        for (i = 0; i < 2; i++) {
-            terminal = Metoco.Data.terminal[line][i];
-            if (Metoco.Location.station === terminal) {
-                continue;
-            }
-            a = document.createElement("a");
-            a.setAttribute("class", "direction ui-btn");
-            a.setAttribute("data-type", "direction");
-            a.setAttribute("data-value", terminal);
-            a.appendChild(document.createTextNode(Metoco.Data.stationName[terminal] + "方面に乗る"));
-            target.appendChild(a);
-            // html += '<li data-type="direction" data-value="' + terminal + '" class="direction">' + Metoco.Data.stationName[terminal] + '方面に乗る' + '</li>';
-            /*
-            li = document.createElement("li");
-            li.setAttribute("class", "direction");
-            li.setAttribute("data-type", "direction");
-            li.setAttribute("data-value", terminal);
-            li.appendChild(document.createTextNode(Metoco.Data.stationName[terminal] + "方面に乗る"));
-            target.parentNode.insertBefore(li, target.nextSibling);
-            */
-        }
-    }
-    /*
-    html += '</ul>';
-    li.innerHTML = html;
-    */
-    target.className = target.className.replace("close", "open");
-    document.getElementById("msg").innerHTML = "進行方向を選んでください";
-    document.getElementById("wrapper").setAttribute("data-title", "進行方向を選んでください");
-}
-
-function showAllStations(target, line) {
-    var i = 0,
-        item,
-        li,
-        html = "";
-    // remove existing elements
-    hideStations(target);
-    // create elements
-    li = document.createElement("li");
-    li.setAttribute("class", "list child");
-    target.parentNode.insertBefore(li, target.nextSibling);
-    html = '<ul class="' + Metoco.Location.line + '">';
-    for (item in Metoco.Data.stations[line]) {
-        // html += '<li data-type="station" data-value="' + item + '" class="stations close">' + Metoco.Data.stationName[item] + '</li>';
-        html += '<li data-type="station" data-value="' + item + '" class="stations close"><a href="#" class="ui-btn">' + Metoco.Data.stationName[item] + '</a></li>';
-    }
-    html += '</ul>';
-    li.innerHTML = html;
-    target.className = target.className.replace("close", "open");
+    setScene("line");
 }
 
 function showAllLines() {
@@ -269,14 +270,118 @@ function showAllLines() {
     }
     html += '</ul>';
     document.getElementById("location").innerHTML = html;
-    document.getElementById("msg").innerHTML = "路線を選んでください";
-    document.getElementById("wrapper").setAttribute("data-title", "路線を選んでください");
-    // Metoco.Util.addClass(document.getElementById("wrapper"), "select-line");
+    setScene("line");
+}
+
+function showDirection(target, line) {
+    var i = 0,
+        a,
+        ul,
+        li,
+        html = "",
+        parent = target,
+        terminal = "";
+    // console.log("line: " + line);
+    // remove existing elements
+    hideDirection(target);
+    // create elements
+    /*
+    li = document.createElement("li");
+    li.setAttribute("class", "list child");
+    target.parentNode.insertBefore(li, target.nextSibling);
+    html = '<ul>';
+    */
+    if (Metoco.Util.getElementsByClassName(target, "direction", "a").length === 0) {
+        if (!Metoco.Location.drillDown) {
+            ul = document.createElement("ul");
+            parent.appendChild(ul);
+            parent = ul;
+            li = document.createElement("li");
+            /*
+            li.setAttribute("data-type", "station");
+            li.setAttribute("data-value", Metoco.Location.station);
+            li.setAttribute("class", "stations");
+            */
+            li.dataset.type = "station";
+            li.dataset.value = Metoco.Location.station;
+            li.className = "stations";
+            parent.appendChild(li);
+            parent = li;
+            // html += '<li data-type="station" data-value="' + Metoco.Location.Station + '" class="stations close"></li>';
+        }
+        for (i = 1; i >= 0; i--) {
+            terminal = Metoco.Data.terminal[line][i];
+            if (Metoco.Location.station === terminal) {
+                continue;
+            }
+            a = document.createElement("a");
+            a.setAttribute("class", "direction ui-btn");
+            a.setAttribute("data-type", "direction");
+            a.setAttribute("data-value", terminal);
+            /*
+            a.dataset.type = "direction";
+            a.dataset.value = terminal;
+            a.className = "direction ui-btn";
+            */
+            a.appendChild(document.createTextNode(Metoco.Data.stationName[terminal] + "方面に乗る"));
+            parent.appendChild(a);
+            // html += '<li data-type="direction" data-value="' + terminal + '" class="direction">' + Metoco.Data.stationName[terminal] + '方面に乗る' + '</li>';
+            /*
+            li = document.createElement("li");
+            li.setAttribute("class", "direction");
+            li.setAttribute("data-type", "direction");
+            li.setAttribute("data-value", terminal);
+            li.appendChild(document.createTextNode(Metoco.Data.stationName[terminal] + "方面に乗る"));
+            target.parentNode.insertBefore(li, target.nextSibling);
+            */
+        }
+        if (!Metoco.Location.drillDown) {
+            parent = target;
+        }
+    }
+    /*
+    html += '</ul>';
+    li.innerHTML = html;
+    */
+    parent.className = parent.className.replace("close", "open");
+    setScene("direction");
+}
+
+function showAllStations(target, line) {
+    var i = 0,
+        item,
+        li,
+        html = "";
+    // remove existing elements
+    hideStations(target);
+    // create elements
+    li = document.createElement("li");
+    // li.setAttribute("class", "list child");
+    li.className = "list child";
+    target.parentNode.insertBefore(li, target.nextSibling);
+    html = '<ul class="' + Metoco.Location.line + '">';
+    for (item in Metoco.Data.stations[line]) {
+        // html += '<li data-type="station" data-value="' + item + '" class="stations close">' + Metoco.Data.stationName[item] + '</li>';
+        html += '<li data-type="station" data-value="' + item + '" class="stations close"><a href="#" class="ui-btn">' + Metoco.Data.stationName[item] + '</a></li>';
+    }
+    html += '</ul>';
+    li.innerHTML = html;
+    target.className = target.className.replace("close", "open");
+    document.getElementById("btn-prev").style.display = "block";
+    setScene("station");
 }
 
 function hideDirection(target) {
     var i = 0,
         items = Metoco.Util.getElementsByClassName(target.parentNode, "stations", "li");
+
+    if (!Metoco.Location.drillDown) {
+        items = Metoco.Util.getElementsByClassName(target.parentNode, "list", "li");
+        for(i = 0; i < items.length; i++) {
+            items[i].className = items[i].className.replace("open", "close");
+        }
+        return;
+    }
     for(i = 0; i < items.length; i++) {
         items[i].className = items[i].className.replace("open", "close");
     }
@@ -300,29 +405,41 @@ function hideStations(target) {
 
 function onClickMode(target) {
     var mode = target.getAttribute("data-value");
+    // var mode = $(target).data("value");
     if (mode === "realtime") {
         getLocation();
     } else {
         Metoco.Location.drillDown = true;
         // Metoco.Location.isActualTime = false;
+        hideMenu();
         showAllLines();
     }
 }
 
 function onClickStation(target) {
     var xhr = Metoco.Util.createXHR(),
-        station = target.innerHTML;
+        station = Metoco.Data.stationName[target.getAttribute("data-value")];
+        // station = Metoco.Data.stationName[$(target).data("value")];
     Metoco.Location.station = target.getAttribute("data-value");
-    refreshBtnArea();
+    // Metoco.Location.station = $(target).data("value");
+    // refreshBtnArea();
     if (target.className.match(/open/)) {
+    // if ($(target).hasClass("open")) {
         hideDirection(target);
+        setScene("station");
         return;
     }
     if (Metoco.Location.drillDown) {
         target.className = target.className.replace("close", "open");
+        /*
+        $(target).removeClass("close");
+        $(target).addClass("open");
+        */
         showDirection(target, Metoco.Location.line);
         return;
     }
+    station = station.replace("<", "〈");
+    station = station.replace(">", "〉");
     xhr.open("GET", "https://api.tokyometroapp.jp/api/v2/datapoints?rdf:type=odpt:Station&dc:title=" + encodeURI(station) + "&acl:consumerKey=913f9f2f3c50040ce394a4429f9b7ccf2c27396bf213d69290b1ab2fb81523fd");
     xhr.send(null);
     xhr.onreadystatechange = function() {
@@ -339,19 +456,27 @@ function onClickStation(target) {
 
 function onClickLine(target) {
     var line = target.getAttribute("data-value");
+    // var line = $(target).data("value");
     Metoco.Location.line = line;
     if (target.className.match(/open/)) {
-        hideStations(target);
+        if (Metoco.Location.drillDown) {
+            document.getElementById("btn-prev").style.display = "none";
+            hideStations(target);
+            setScene("line");
+        } else {
+            hideStations(target);
+            setScene("line");
+        }
         return;
     }
     if (Metoco.Location.drillDown) {
         target.className = target.className.replace("close", "open");
         showAllStations(target, line);
-        document.getElementById("msg").innerHTML = "乗車駅を選んでください";
-        document.getElementById("wrapper").setAttribute("data-title", "乗車駅を選んでください");
         return;
     }
+    target.className = target.className.replace("close", "open");
     showDirection(target, line);
+    setScene("station");
 }
 
 function onClickDirection(target) {
@@ -364,22 +489,32 @@ function onClickDirection(target) {
         isActualTime: Metoco.Location.isActualTime
     });
 
-    document.getElementById("btnArea").innerHTML = '<span id="btnStop">トップへ戻る</span>';
+    document.getElementById("btn-back").innerHTML = '<a href="#" class="ui-btn" id="btnStop">スタート画面に戻る</a>';
     document.getElementById("result").style.display = "block";
     document.getElementById("location").style.display = "none";
-    document.getElementById("msg").innerHTML = "メトロの車窓から";
+    document.getElementById("btn-prev").style.display = "none";
+    document.getElementById("msg").style.display = "none";
+    Metoco.Util.addClass(document.getElementById("result"), Metoco.Location.line);
     Metoco.Util.addClass(document.getElementById("wrapper"), "end");
+    window.scrollTo(0, 0);
     Metoco.Slide.start();
 }
 
 // イベント登録
-Metoco.Util.addEvent(document.getElementById("btnArea"), "click", function(e) {
-    var ev = e || window.event;
-    ev.preventDefault();
-    switch (ev.target.getAttribute("id")) {
+Metoco.Util.addEvent(document.getElementById("btn-back"), "click", function(e) {
+    var ev = e || window.event,
+        target = ev.target || ev.srcElement;
+    Metoco.Util.preventDefault(ev);
+    // switch (target.getAttribute("id")) {
+    switch (target.id) {
+        case "btnTop":
+            document.getElementById("location").style.display = "none";
+            showMenu();
+            break;
         case "btnStop":
             Metoco.Slide.stop();
             document.getElementById("result").style.display = "none";
+            document.getElementById("msg").style.display = "block";
             Metoco.Util.removeClass(document.getElementById("wrapper"), "end");
             showMenu();
             break;
@@ -394,41 +529,80 @@ Metoco.Util.addEvent(document.getElementById("btnArea"), "click", function(e) {
     return false;
 }, false);
 
-Metoco.Util.addEvent(document.getElementById("start-btn"), "click", function(e) {
-    var ev = e || window.event;
+Metoco.Util.addEvent(document.getElementById("btn-prev"), "click", function(e) {
+    var ev = e || window.event,
+        target;
     Metoco.Util.preventDefault(ev);
-    hideMenu();
-    onClickMode(ev.target);
+    Metoco.Util.stopPropagation(ev);
+    if (Metoco.Location.drillDown) {
+        if (Metoco.Location.scene === "station") {
+            showAllLines();
+            Metoco.Util.removeEvent("btn-prev", "click", false);
+            document.getElementById("btn-prev").style.display = "none";
+            setScene("line");
+        } else {
+            hideDirection(Metoco.Util.getElementsByClassName(document.getElementById("location"), "direction", "li")[0]);
+            // console.log(Metoco.Util.getElementsByClassName(document.getElementById("location"), "stations open", "a"));
+            hideDirection(Metoco.Util.getElementsByClassName(document.getElementById("location"), "stations open", "a")[0]);
+            setScene("station");
+        }
+    } else {
+        if (Metoco.Location.scene === "line") {
+            Metoco.Location.lines = [];
+            getLocation();
+            document.getElementById("btn-prev").style.display = "none";
+            setScene("station");
+        } else {
+            target = Metoco.Util.getElementsByClassName(document.getElementById("location"), "open", "li")[0];
+            hideDirection(target);
+            setScene("line");
+        }
+    }
+}, false);
+
+Metoco.Util.addEvent(document.getElementById("start-btn"), "click", function(e) {
+    var ev = e || window.event,
+        target = ev.target || ev.srcElement;
+    Metoco.Util.preventDefault(ev);
+    onClickMode(target);
 }, false);
 
 Metoco.Util.addEvent(document.getElementById("location"), "click", function(e) {
-    var ev = e || window.event;
+    var ev = e || window.event,
+        target = ev.target || ev.srcElement;
     Metoco.Util.preventDefault(ev);
     Metoco.Util.stopPropagation(ev);
-    switch (ev.target.parentNode.getAttribute("data-type")) {
+
+    // switch (target.parentNode.getAttribute("data-type")) {
+    switch (target.parentNode.getAttribute("data-type")) {
         case "mode":
-            onClickMode(ev.target);
+            onClickMode(target);
             break;
         case "station":
-            if (ev.target.getAttribute("data-type") === "direction") {
-                Metoco.Location.direction = ev.target.getAttribute("data-value");
-                onClickDirection(ev.target.parentNode);
+            if (target.getAttribute("data-type") === "direction") {
+            // if ($(target).data("type") === "direction") {
+                Metoco.Location.direction = target.getAttribute("data-value");
+                // Metoco.Location.direction = $(target).data("value");
+                onClickDirection(target.parentNode);
             } else {
-                onClickStation(ev.target.parentNode);
+                onClickStation(target.parentNode);
             }
             break;
         case "line":
-            onClickLine(ev.target.parentNode);
+            onClickLine(target.parentNode);
             break;
         case "direction":
-            onClickDirection(ev.target.parentNode);
+            onClickDirection(target.parentNode);
             break;
         default:
+            onClickStation(target);
             break;
     }
+    /*
     console.log("data-type: " + ev.target.parentNode.getAttribute("data-type"));
     console.log("data-value: " + ev.target.parentNode.getAttribute("data-value"));
     console.log("innerHTML: " + ev.target.parentNode.innerHTML);
+    */
 }, false);
 
 })();

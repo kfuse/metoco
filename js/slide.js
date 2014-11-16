@@ -3,6 +3,7 @@ Metoco.Slide = typeof Metoco.Slide === "undefined" ? {} : Metoco.Slide;
 Metoco.Slide.Setting = {
     INTERVAL: 500,
     debug: true,
+    imgSize: "450x450",
     line: "",
     startStation: "",
     endStation: "",
@@ -92,7 +93,7 @@ function getNextStation(line, stationName, isReverse) {
 // 画像を先読み
 function loadImage(lat, lon, heading) {
     if (!Metoco.Slide.Setting.debug) {
-        Metoco.Slide.Temp.image.src = "http://maps.googleapis.com/maps/api/streetview?size=450x450&location=" + lat + "," + lon + "&heading=" + heading + "&pitch=20&sensor=false";
+        Metoco.Slide.Temp.image.src = "http://maps.googleapis.com/maps/api/streetview?size=" + Metoco.Slide.Setting.imgSize + "&location=" + lat + "," + lon + "&heading=" + heading + "&pitch=20&sensor=false";
     }
 }
 
@@ -100,7 +101,7 @@ function loadImage(lat, lon, heading) {
 function putSlideImage(lat, lon, heading) {
     if (!Metoco.Slide.Setting.debug) {
         // http://maps.googleapis.com/maps/api/streetview?size=320x320&location=35.64352,139.69815&heading=48&pitch=20&sensor=false
-        document.getElementById("slide").src = "http://maps.googleapis.com/maps/api/streetview?size=450x450&location=" + lat + "," + lon + "&heading=" + heading + "&pitch=20&sensor=false";
+        document.getElementById("slide").src = "http://maps.googleapis.com/maps/api/streetview?size=" + Metoco.Slide.Setting.imgSize + "&location=" + lat + "," + lon + "&heading=" + heading + "&pitch=20&sensor=false";
     }
 }
 
@@ -129,6 +130,9 @@ Metoco.Slide.init = function(setting) {
     Metoco.Slide.Setting.stopDuration = setting.stopDuration || 20000;
     Metoco.Slide.Status.current = 0;
     Metoco.Slide.Status.currentStation = Metoco.Slide.Setting.startStation;
+    if (window.innerWidth > 500) {
+        Metoco.Slide.Setting.imgSize = "640x640";
+    }
 };
 
 function showPosition(from, to) {
@@ -136,7 +140,7 @@ function showPosition(from, to) {
     if (to === undefined) {
         position.innerHTML = Metoco.Data.stationName[from];
     } else {
-        position.innerHTML = Metoco.Data.stationName[from] + " >>> " + Metoco.Data.stationName[to];
+        position.innerHTML = "<em>" + Metoco.Data.stationName[from] + "</em><span>&gt;</span><span>&gt;</span><span>&gt;</span><span>&gt;</span><span>&gt;</span><span>&gt;</span><em>" + Metoco.Data.stationName[to] + "</em>";
     }
 }
 
@@ -144,6 +148,7 @@ Metoco.Slide.stop = function() {
     clearInterval(Metoco.Slide.Status.intervalId);
     Metoco.Slide.Status.intervalId = null;
     Metoco.Slide.Status.isMoving = false;
+    document.getElementById("slide").src = "";
 }
 
 /**
@@ -221,14 +226,14 @@ function startMoving(line, start) {
     Metoco.Slide.Status.current = start;
     nextStation = getNextStation(line, Metoco.Slide.Status.currentStation, isReverse);
     next = Metoco.Data.stations[line][nextStation].index;
-    console.log("next station: " + nextStation);
+    // console.log("next station: " + nextStation);
     showPosition(Metoco.Slide.Status.currentStation, nextStation);
 
     // 間隔を取得
     if (Metoco.Slide.Setting.isActualTime) {
         necessaryTime = getNecessaryTime(line, Metoco.Slide.Status.currentStation, nextStation);
         interval = Math.floor(necessaryTime / Math.abs(next - start));
-        console.log("interval: " + interval);
+        // console.log("interval: " + interval);
     } else {
         interval = Metoco.Slide.Setting.INTERVAL;
     }
@@ -255,14 +260,14 @@ function startMoving(line, start) {
         // 方角を取得
         deg = getDegree(from, to);
         // console.log("degree: " + deg);
-        console.log("lat: " + from[1] + ", lon: " + from[0]);
+        // console.log("lat: " + from[1] + ", lon: " + from[0]);
 
         putSlideImage(points[Metoco.Slide.Status.current][1], points[Metoco.Slide.Status.current][0], deg);
 
         // 終点に到達した場合
         if (Metoco.Slide.Status.current === end) {
             Metoco.Slide.stop();
-            console.log("end");
+            // console.log("end");
             showPosition(Metoco.Slide.Status.currentStation);
             return;
         }
@@ -278,7 +283,7 @@ function startMoving(line, start) {
             } else {
                 startMoving(line, Metoco.Slide.Status.current);
             }
-            console.log("continue");
+            // console.log("continue");
         }
         // 次の画像を準備
         if (isReverse) {

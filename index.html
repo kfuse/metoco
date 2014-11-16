@@ -7,7 +7,9 @@
 <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
 <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
 <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+<!--
 <script type="text/javascript" src="js/jquery.bgswitcher.js"></script>
+-->
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,18 +17,20 @@
 <div id="wrapper" class="start ui-page-active" data-role="page" data-title="メトロの車窓から">
 
 <div id="header" data-role="header">
+<a href="#" id="btn-prev" class="ui-btn ui-icon-back  ui-btn-icon-left ui-btn-icon-notext">戻る</a>
 <div id="title"><img src="img/title.png" alt="メトロの車窓から"></div>
 <p id="msg"></p>
 </div>
 
+
+<div id="shaso" role="main" class="ui-content">
 <div id="result">
 <img src="" id="slide">
 <p id="position"><p>
 </div>
-
-<div id="shaso" role="main" class="ui-content">
 <div id="logo"><img src="img/logo.png" alt="メトロの車窓から"></div>
 <div id="welcome">地下鉄に乗りながら地上の車窓の風景を<span>楽しむことができるアプリです</span></div>
+<div id="loading"></div>
 <div id="start-btn">
 <a href="#" data-type="mode" data-value="realtime" class="mode ui-btn">位置情報から乗車駅を選ぶ</a>
 <a href="#" data-type="mode" data-value="remote" class="mode ui-btn">路線名から乗車駅を選ぶ</a>
@@ -34,24 +38,16 @@
 <div id="location"></div>
 </div>
 
-<!--
-<div id="location">
-<ul>
-<li data-type="mode" data-value="realtime" class="mode">位置情報から乗車駅を選ぶ</li>
-<li data-type="mode" data-value="remote" class="mode">路線名から乗車駅を選ぶ</li>
-</ul>
-</div>
--->
-<div id="btnArea"></div>
+<div id="btn-back"></div>
 
 <div id="footer" data-role="footer">Copyright &copy; 2014, a-kai Metoco Project</div>
 
 </div>
 
-<script type="text/javascript" src="js/data.js"></script>
-<script type="text/javascript" src="js/slide.js"></script>
-<script type="text/javascript" src="js/util.js"></script>
-<script type="text/javascript" src="js/app.js"></script>
+<script type="text/javascript" src="js/data-min.js"></script>
+<script type="text/javascript" src="js/slide-min.js"></script>
+<script type="text/javascript" src="js/util-min.js"></script>
+<script type="text/javascript" src="js/app-min.js"></script>
 
 </body>
 </html>

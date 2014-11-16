@@ -80,6 +80,25 @@ Metoco.Util = {
         }
     },
     /**
+     * イベントを削除する
+     * @name removeEvent
+     * @static
+     * @param {Object} el イベントを削除するオブジェクト
+     * @param {String} type イベントタイプ
+     * @param {Function} fn イベント実行時のコールバック関数
+     */
+    removeEvent: function (el, type, fn) {
+        if (el) {
+            if (el.detachEvent) {
+                el.detachEvent("on" + type, fn);
+            } else if (el.removeEventListener) {
+                el.removeEventListener(type, fn, false);
+            } else {
+                el["on" + type] = null;
+            }
+        }
+    },
+    /**
      * 指定したクラス名を追加する
      * @name addClass
      * @static
