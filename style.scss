@@ -1,0 +1,704 @@
+@mixin btnLabel{
+color: #fff;
+text-shadow: 0 0 1px #000;
+}
+$Ginza:#F88D00;
+$Marunouchi:#E70028;
+$Hibiya:#B4B5A9;
+$Tozai:#009DD2;
+$Chiyoda:#00C380;
+$Yurakucho:#D5AD60;
+$Hanzomon:#8E6AD7;
+$Namboku:#26B09C;
+$Fukutoshin:#955C2F;
+$btnActive:#00B3FF;
+
+div[data-role="page"]{
+	padding-bottom: 2em;
+	background-color: #CFF4FF;
+}
+#title{
+	width: 100%;
+	display: block;
+}
+#loading {
+	display: none;
+	margin-top: 80px;
+	text-align: center;
+	.loadingImg {
+		display: inline;
+		padding: 5px 0 5px 30px;
+		background: url(http://code.jquery.com/mobile/1.4.5/images/ajax-loader.gif) 0 0 no-repeat;
+		background-size: 23px 23px;
+		line-height: 1.8;
+	}
+}
+#header{
+	display: none;
+	background-color: #E8F9FF;
+	border-bottom-color: #CFF4FF;
+	text-align: center;
+	#btn-prev{
+		display: none;
+		padding:17px;
+		background-color:#00B3FF;
+		border:none;
+		border-radius:5px
+	}
+	img{
+		margin-top: 5px;
+		width: 131px;
+		height: 20px;
+	}
+	#msg{
+		margin: 0;
+		padding: 0.7em 0;
+		background-color: #CFF4FF;
+		color: #019ef0;
+		text-shadow: 0 0 0 #000;
+	}
+}
+#shaso{
+	background-color: #fff;
+	.ui-btn,
+	.ui-page-theme-a .ui-btn,
+	.ui-page-theme-a .ui-btn:visited{
+		padding: 1em;
+		background-color: #fff;
+		border-radius: 3px;
+	}
+	.ui-btn-active{
+		background-color: $btnActive;
+		border-color: $btnActive;
+		color: #fff;
+		text-shadow: none;
+	}
+	ul{
+		margin: 0;
+		padding: 0;
+	}
+	li[data-type="line"].close .stations{
+		display: none;
+	}
+	li[data-type="line"].open .stations{
+		margin-left: 0;
+		border-top: none;
+	}
+	li[data-type="line"].open .stations:last-child{
+		border-bottom: none;
+	}
+	li{
+		list-style: none;
+		.close .direction{
+			display: none;
+		}
+		.ui-btn{
+			padding: 1em 0 1em 5em;
+			background-repeat: no-repeat;
+			background-size: contain;
+			background-color: #fff;
+			border: none;
+			text-align: left;
+		}
+		.ui-btn-active{
+			color: #000;
+			text-shadow: none;
+		}
+		&[data-type="station"].stations{
+			margin-left: 5em;
+			border-top: 1px dotted #333;
+			&:last-child{
+			border-bottom: 1px dotted #333;				
+			}
+		}
+		&[data-type="station"].stations .ui-btn{
+			padding: 1em 0;
+			background: none;
+			&:after{
+				content: '駅';
+			}
+		}
+		&[data-type="station"].stations .ui-btn.direction{
+			text-align: center;
+			&:after{
+				content: '';
+			}
+		}
+		&[data-type="line"][data-value="Ginza"]{
+			a{
+				background-image: url(img/Ginza.jpg);
+			}
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Ginza;
+				@include btnLabel;
+			}
+		}
+		&[data-type="line"][data-value="Marunouchi"]{
+			a{
+				background-image: url(img/Marunouchi.jpg);
+			}
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Marunouchi;
+				@include btnLabel;
+			}
+		}
+		&[data-type="line"][data-value="MarunouchiBranch"]{
+			a{
+				background-image: url(img/Marunouchi.jpg);
+			}
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Marunouchi;
+				@include btnLabel;
+			}
+		}
+		&[data-type="line"][data-value="Hibiya"]{
+			a{
+				background-image: url(img/Hibiya.jpg);
+			}
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Hibiya;
+			}
+		}
+		&[data-type="line"][data-value="Tozai"]{
+			a{
+				background-image: url(img/Tozai.jpg);
+			}
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Tozai;
+				@include btnLabel;
+			}
+		}
+		&[data-type="line"][data-value="Chiyoda"]{
+			a{
+				background-image: url(img/Chiyoda.jpg);
+			}
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Chiyoda;
+				@include btnLabel;
+			}
+		}
+		&[data-type="line"][data-value="Yurakucho"]{
+			a{
+				background-image: url(img/Yurakucho.jpg);
+			}
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Yurakucho;
+			}
+		}
+		&[data-type="line"][data-value="Hanzomon"]{
+			a{
+			background-image: url(img/Hanzomon.jpg);
+			}
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Hanzomon;
+				@include btnLabel;
+			}
+		}
+		&[data-type="line"][data-value="Namboku"]{
+			a{
+				background-image: url(img/Namboku.jpg);
+			}
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Namboku;
+				@include btnLabel;
+			}
+		}
+		&[data-type="line"][data-value="Fukutoshin"]{
+			a{
+				background-image: url(img/Fukutoshin.jpg);
+			}
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Fukutoshin;
+				@include btnLabel;
+			}
+		}
+
+		.Ginza{
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Ginza;
+				@include btnLabel;
+			}
+		}
+		.Marunouchi{
+			a{
+				background-image: url(img/Marunouchi.jpg);
+			}
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Marunouchi;
+				@include btnLabel;
+			}
+		}
+		.MarunouchiBranch{
+			a{
+				background-image: url(img/Marunouchi.jpg);
+			}
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Marunouchi;
+				@include btnLabel;
+			}
+		}
+		.Hibiya{
+			a{
+				background-image: url(img/Hibiya.jpg);
+			}
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Hibiya;
+			}
+		}
+		.Tozai{
+			a{
+				background-image: url(img/Tozai.jpg);
+			}
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Tozai;
+				@include btnLabel;
+			}
+		}
+		.Chiyoda{
+			a{
+				background-image: url(img/Chiyoda.jpg);
+			}
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Chiyoda;
+				@include btnLabel;
+			}
+		}
+		.Yurakucho{
+			a{
+				background-image: url(img/Yurakucho.jpg);
+			}
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Yurakucho;
+			}
+		}
+		.Hanzomon{
+			a{
+			background-image: url(img/Hanzomon.jpg);
+			}
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Hanzomon;
+				@include btnLabel;
+			}
+		}
+		.Namboku{
+			a{
+				background-image: url(img/Namboku.jpg);
+			}
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Namboku;
+				@include btnLabel;
+			}
+		}
+		.Fukutoshin{
+			a{
+				background-image: url(img/Fukutoshin.jpg);
+			}
+			li[data-type="station"].stations .ui-btn.direction{
+				background-color: $Fukutoshin;
+				@include btnLabel;
+			}
+		}
+
+	}
+}
+#result {
+	display: none;
+}
+#btn-back{
+	margin: 0 auto;
+	padding: 2em 0;
+	width: 90%;
+	text-align: center;
+	a{
+		background-color: #00B3FF;
+		border: none;
+		color: #fff;
+		text-shadow: 0 0 0 #000;
+	}
+	.ui-btn,
+	.ui-page-theme-a .ui-btn,
+	.ui-page-theme-a .ui-btn:visited{
+		padding: 1em;
+		background-color: $btnActive;
+		border-radius: 3px;
+	}
+	.ui-btn-active{
+		background-color: $btnActive;
+		border-color: $btnActive;
+		color: #fff;
+		text-shadow: none;
+	}
+}
+#footer{
+	margin: 0 auto;
+	position: fixed;
+	width: 100%;
+	height: 1em;
+	bottom: 0;
+	border: none;
+	background-color: #000;
+	opacity: 0.5;
+	padding: 0.7em 0;
+	text-shadow: 0 0 0 #000;
+	text-align: center;
+	font-weight: normal;
+	font-size: small;
+	color: #fff;
+}
+// 各ページごとのスタイル
+// スタート画面
+.start{
+	margin: 0 auto;
+	// width: 320px;
+	height: 100%;
+	background-color: #fff;
+	background-position: center 0;
+	// background-repeat: no-repeat;
+	background-size: contain;
+	background-image: url(img/bg1.jpg);
+	position: relative;
+	@media screen and (max-device-width: 640px) {
+		width: 100%;
+	}
+	#logo{
+		margin: 45px 0 0 0;
+		text-align: center;
+		img{
+			width: 193px;
+			height: auto;
+		}
+	}
+	#welcome{
+		margin-top: 0.5em;
+		text-shadow: 0	0 2px #000;
+		text-align: center;
+		line-height: 1.75;
+		color: #fff;
+		span{
+			display: block;
+		}
+	}
+	#start-btn{
+		margin-top: 80px;
+		.ui-btn{
+			background-color: #fff;
+		}
+		.ui-btn-active{
+			background-color: $btnActive;
+			color:#fff;
+		}
+	}
+	#shaso{
+		background-color: transparent;
+	}
+	#footer{
+		// width: 320px;
+		width: 100%;
+		@media screen and (max-device-width: 640px) {
+			width: 100%;
+		}
+	}
+}
+// 位置情報から選ぶ-乗車駅を選ぶ
+#gps-station{
+	#shaso{
+		li{
+			&[data-type="station"].stations{
+				margin-left: 0;
+				border-top: 1px dotted #ccc;
+				&:last-child{
+				border-bottom: 1px dotted #ccc;				
+				}
+			}
+		}
+
+	}
+}
+// 位置情報から選ぶ-進行方向を選ぶ
+#gps-direction{
+	#shaso{
+		li{
+			&[data-type="station"].stations{
+				margin-left: 0;
+				border: none;
+				&:last-child{
+					border-bottom: none;				
+				}
+			}
+		}
+	}
+
+}
+// 車窓表示画面
+.end{
+	#msg{
+		display: none;
+	}
+	#shaso{
+		background-color: #CFF4FF;
+		text-align: center;
+	}
+	#result{
+		padding: 10px;
+		background-color: #fff;
+		&.Ginza{
+			border-bottom: 4px solid $Ginza;
+		}
+		&.Marunouchi{
+			border-bottom: 4px solid $Marunouchi;
+		}
+		&.MarunouchiBranch{
+			border-bottom: 4px solid $Marunouchi;
+		}
+		&.Hibiya{
+			border-bottom: 4px solid $Hibiya;
+		}
+		&.Tozai{
+			border-bottom: 4px solid $Tozai;
+		}
+		&.Chiyoda{
+			border-bottom: 4px solid $Chiyoda;
+		}
+		&.Yurakucho{
+			border-bottom: 4px solid $Yurakucho;
+		}
+		&.Hanzomon{
+			border-bottom: 4px solid $Hanzomon;
+		}
+		&.Namboku{
+			border-bottom: 4px solid $Namboku;
+		}
+		&.Fukutoshin{
+			border-bottom: 4px solid $Fukutoshin;
+		}
+		#position{
+			em{
+				font-style: normal;
+				&:first-of-type{
+					padding-right: 1em;
+				}
+				&:last-of-type{
+					padding-left: 1em;
+				}
+			}
+			span{
+				padding: 0 0.1em;
+				font-size: large;
+				&:nth-of-type(1){
+					-webkit-animation: arrow1 linear 6s;
+					-moz-animation: arrow1 linear 6s;
+					animation: arrow1 linear 6s;
+ 					-webkit-animation-iteration-count: infinite;
+ 					-moz-animation-iteration-count: infinite;
+					animation-iteration-count: infinite;
+				}
+				&:nth-of-type(2){
+					-webkit-animation: arrow2 linear 6s;
+					-moz-animation: arrow2 linear 6s;
+					animation: arrow2 linear 6s;
+ 					-webkit-animation-iteration-count: infinite;
+ 					-moz-animation-iteration-count: infinite;
+					animation-iteration-count: infinite;
+				}
+				&:nth-of-type(3){
+					-webkit-animation: arrow3 linear 6s;
+					-moz-animation: arrow3 linear 6s;
+					animation: arrow3 linear 6s;
+ 					-webkit-animation-iteration-count: infinite;
+ 					-moz-animation-iteration-count: infinite;
+					animation-iteration-count: infinite;
+				}
+				&:nth-of-type(4){
+					-webkit-animation: arrow4 linear 6s;
+					-moz-animation: arrow4 linear 6s;
+					animation: arrow4 linear 6s;
+ 					-webkit-animation-iteration-count: infinite;
+ 					-moz-animation-iteration-count: infinite;
+					animation-iteration-count: infinite;
+				}
+				&:nth-of-type(5){
+					-webkit-animation: arrow5 linear 6s;
+					-moz-animation: arrow5 linear 6s;
+					animation: arrow5 linear 6s;
+ 					-webkit-animation-iteration-count: infinite;
+ 					-moz-animation-iteration-count: infinite;
+					animation-iteration-count: infinite;
+				}
+				&:nth-of-type(6){
+					-webkit-animation: arrow6 linear 6s;
+					-moz-animation: arrow6 linear 6s;
+					animation: arrow6 linear 6s;
+ 					-webkit-animation-iteration-count: infinite;
+ 					-moz-animation-iteration-count: infinite;
+					animation-iteration-count: infinite;
+				}
+				&:nth-of-type(7){
+					-webkit-animation: arrow7 linear 6s;
+					-moz-animation: arrow7 linear 6s;
+					animation: arrow7 linear 6s;
+ 					-webkit-animation-iteration-count: infinite;
+ 					-moz-animation-iteration-count: infinite;
+					animation-iteration-count: infinite;
+				}
+				&:nth-of-type(8){
+					-webkit-animation: arrow8 linear 6s;
+					-moz-animation: arrow8 linear 6s;
+					animation: arrow8 linear 6s;
+ 					-webkit-animation-iteration-count: infinite;
+ 					-moz-animation-iteration-count: infinite;
+					animation-iteration-count: infinite;
+				}
+			}
+		}
+	}
+	#slide{
+		width: 100%;
+		border-radius: 6px;
+	}
+}
+@-webkit-keyframes arrow1{
+	0% {opacity:0.2;}
+	10% {opacity:1;}
+	100% {opacity:1;}
+}
+@-webkit-keyframes arrow2{
+	0% {opacity:0.2;}
+	10% {opacity:0.2;}
+	20% {opacity:1;}
+	100% {opacity:1;}
+}
+@-webkit-keyframes arrow3{
+	0% {opacity:0.2;}
+	20% {opacity:0.2;}
+	30% {opacity:1;}
+	100% {opacity:1;}
+}
+@-webkit-keyframes arrow4{
+	0% {opacity:0.2;}
+	30% {opacity:0.2;}
+	40% {opacity:1;}
+	100% {opacity:1;}
+}
+@-webkit-keyframes arrow5{
+	0% {opacity:0.2;}
+	40% {opacity:0.2;}
+	50% {opacity:1;}
+	100% {opacity:1;}
+}
+@-webkit-keyframes arrow6{
+	0% {opacity:0.2;}
+	50% {opacity:0.2;}
+	60% {opacity:1;}
+	100% {opacity:1;}
+}
+@-webkit-keyframes arrow7{
+	0% {opacity:0.2;}
+	60% {opacity:0.2;}
+	70% {opacity:1;}
+	100% {opacity:1;}
+}
+@-webkit-keyframes arrow8{
+	0% {opacity:0.2;}
+	70% {opacity:0.2;}
+	80% {opacity:1;}
+	100% {opacity:1;}
+}
+@-moz-keyframes arrow1{
+	0% {opacity:0.2;}
+	10% {opacity:1;}
+	100% {opacity:1;}
+}
+@-moz-keyframes arrow2{
+	0% {opacity:0.2;}
+	10% {opacity:0.2;}
+	20% {opacity:1;}
+	100% {opacity:1;}
+}
+@-moz-keyframes arrow3{
+	0% {opacity:0.2;}
+	20% {opacity:0.2;}
+	30% {opacity:1;}
+	100% {opacity:1;}
+}
+@-moz-keyframes arrow4{
+	0% {opacity:0.2;}
+	30% {opacity:0.2;}
+	40% {opacity:1;}
+	100% {opacity:1;}
+}
+@-moz-keyframes arrow5{
+	0% {opacity:0.2;}
+	40% {opacity:0.2;}
+	50% {opacity:1;}
+	100% {opacity:1;}
+}
+@-moz-keyframes arrow6{
+	0% {opacity:0.2;}
+	50% {opacity:0.2;}
+	60% {opacity:1;}
+	100% {opacity:1;}
+}
+@-moz-keyframes arrow7{
+	0% {opacity:0.2;}
+	60% {opacity:0.2;}
+	70% {opacity:1;}
+	100% {opacity:1;}
+}
+@-moz-keyframes arrow8{
+	0% {opacity:0.2;}
+	70% {opacity:0.2;}
+	80% {opacity:1;}
+	100% {opacity:1;}
+}
+@keyframes arrow1{
+	0% {opacity:0.2;}
+	10% {opacity:1;}
+	100% {opacity:1;}
+}
+@keyframes arrow2{
+	0% {opacity:0.2;}
+	10% {opacity:0.2;}
+	20% {opacity:1;}
+	100% {opacity:1;}
+}
+@keyframes arrow3{
+	0% {opacity:0.2;}
+	20% {opacity:0.2;}
+	30% {opacity:1;}
+	100% {opacity:1;}
+}
+@keyframes arrow4{
+	0% {opacity:0.2;}
+	30% {opacity:0.2;}
+	40% {opacity:1;}
+	100% {opacity:1;}
+}
+@keyframes arrow5{
+	0% {opacity:0.2;}
+	40% {opacity:0.2;}
+	50% {opacity:1;}
+	100% {opacity:1;}
+}
+@keyframes arrow6{
+	0% {opacity:0.2;}
+	50% {opacity:0.2;}
+	60% {opacity:1;}
+	100% {opacity:1;}
+}
+@keyframes arrow7{
+	0% {opacity:0.2;}
+	60% {opacity:0.2;}
+	70% {opacity:1;}
+	100% {opacity:1;}
+}
+@keyframes arrow8{
+	0% {opacity:0.2;}
+	70% {opacity:0.2;}
+	80% {opacity:1;}
+	100% {opacity:1;}
+}
+
+
+
+
+
