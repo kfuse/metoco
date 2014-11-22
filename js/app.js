@@ -36,6 +36,7 @@ effect: "fade"
 function getLocation() {
     if (!navigator.geolocation) {
         Metoco.Location.drillDown = true;
+        hideMenu();
         showAllLines();
         return;
     }
@@ -47,8 +48,8 @@ function getLocation() {
             getStation();
         },
         function() {
-            hideMenu();
             Metoco.Location.drillDown = true;
+            hideMenu();
             showAllLines();
             /*
             Metoco.Location.lat = "35.678156";
@@ -297,14 +298,14 @@ function showDirection(target, line) {
             parent.appendChild(ul);
             parent = ul;
             li = document.createElement("li");
-            /*
             li.setAttribute("data-type", "station");
             li.setAttribute("data-value", Metoco.Location.station);
             li.setAttribute("class", "stations");
-            */
+            /*
             li.dataset.type = "station";
             li.dataset.value = Metoco.Location.station;
             li.className = "stations";
+            */
             parent.appendChild(li);
             parent = li;
             // html += '<li data-type="station" data-value="' + Metoco.Location.Station + '" class="stations close"></li>';

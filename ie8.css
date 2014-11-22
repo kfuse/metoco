@@ -1,0 +1,30 @@
+#shaso li[data-type="line"][data-value="Ginza"] a {
+    background-image: url(img/Ginza_s.jpg);
+}
+#shaso li[data-type="line"][data-value="Marunouchi"] a {
+    background-image: url(img/Marunouchi_s.jpg);
+}
+#shaso li[data-type="line"][data-value="MarunouchiBranch"] a {
+    background-image: url(img/Marunouchi_s.jpg);
+}
+#shaso li[data-type="line"][data-value="Hibiya"] a {
+    background-image: url(img/Hibiya_s.jpg);
+}
+#shaso li[data-type="line"][data-value="Tozai"] a {
+    background-image: url(img/Tozai_s.jpg);
+}
+#shaso li[data-type="line"][data-value="Chiyoda"] a {
+    background-image: url(img/Chiyoda_s.jpg);
+}
+#shaso li[data-type="line"][data-value="Yurakucho"] a {
+    background-image: url(img/Yurakucho_s.jpg);
+}
+#shaso li[data-type="line"][data-value="Hanzomon"] a {
+    background-image: url(img/Hanzomon_s.jpg);
+}
+#shaso li[data-type="line"][data-value="Namboku"] a {
+    background-image: url(img/Namboku_s.jpg);
+}
+#shaso li[data-type="line"][data-value="Fukutoshin"] a {
+    background-image: url(img/Fukutoshin_s.jpg);
+}
