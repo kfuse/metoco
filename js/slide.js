@@ -2,6 +2,7 @@
 Metoco.Slide = typeof Metoco.Slide === "undefined" ? {} : Metoco.Slide;
 Metoco.Slide.Setting = {
     INTERVAL: 500,
+    API_KEY: "AIzaSyDyoLbguLfL0WOMtomMH8RL7Rw9qIWIHJU",
     debug: true,
     imgSize: "450x450",
     line: "",
@@ -93,7 +94,7 @@ function getNextStation(line, stationName, isReverse) {
 // 画像を先読み
 function loadImage(lat, lon, heading) {
     if (!Metoco.Slide.Setting.debug) {
-        Metoco.Slide.Temp.image.src = "http://maps.googleapis.com/maps/api/streetview?size=" + Metoco.Slide.Setting.imgSize + "&location=" + lat + "," + lon + "&heading=" + heading + "&pitch=20&sensor=false";
+        Metoco.Slide.Temp.image.src = "http://maps.googleapis.com/maps/api/streetview?size=" + Metoco.Slide.Setting.imgSize + "&location=" + lat + "," + lon + "&heading=" + heading + "&pitch=20&sensor=false&key=" + Metoco.Slide.Setting.API_KEY;
     }
 }
 
@@ -101,7 +102,7 @@ function loadImage(lat, lon, heading) {
 function putSlideImage(lat, lon, heading) {
     if (!Metoco.Slide.Setting.debug) {
         // http://maps.googleapis.com/maps/api/streetview?size=320x320&location=35.64352,139.69815&heading=48&pitch=20&sensor=false
-        document.getElementById("slide").src = "http://maps.googleapis.com/maps/api/streetview?size=" + Metoco.Slide.Setting.imgSize + "&location=" + lat + "," + lon + "&heading=" + heading + "&pitch=20&sensor=false";
+        document.getElementById("slide").src = "http://maps.googleapis.com/maps/api/streetview?size=" + Metoco.Slide.Setting.imgSize + "&location=" + lat + "," + lon + "&heading=" + heading + "&pitch=20&sensor=false&key=" + Metoco.Slide.Setting.API_KEY;
     }
 }
 

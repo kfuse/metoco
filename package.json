@@ -1,0 +1,23 @@
+{
+  "name": "metoco",
+  "version": "1.0.0",
+  "description": "",
+  "main": "js/app.js",
+  "devDependencies": {
+    "sass": "^1.20.3",
+    "uglify-js": "^3.6.0"
+  },
+  "scripts": {
+    "build": "make"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kfuse/metoco.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kfuse/metoco/issues"
+  },
+  "homepage": "https://github.com/kfuse/metoco#readme"
+}
