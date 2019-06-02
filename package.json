@@ -2,23 +2,20 @@
   "name": "metoco",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "dependencies": {
-    "uglifyjs": "^2.4.11"
-  },
+  "main": "js/app.js",
   "devDependencies": {
     "sass": "^1.20.3",
     "uglify-js": "^3.6.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "make"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kfuse/metoco.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/kfuse/metoco/issues"
   },
