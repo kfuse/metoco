@@ -7,6 +7,6 @@ build:
 	@npx uglifyjs -c -o js/util-min.js js/util.js
 	@npx uglifyjs -c -o js/slide-min.js js/slide.js
 	@npx uglifyjs -c -o js/app-min.js js/app.js
-	@npx sass style.scss:style.css --style compressed
+	@npx sass css/style.scss:css/style.css --style compressed
 	@echo compress [OK]
 
